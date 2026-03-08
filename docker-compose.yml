@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  ehrgym:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    environment:
+      DATABASE_URL: file:/app/prisma/dev.db
+      EHR_BASE_URL: http://127.0.0.1:3000
+      PLAYWRIGHT_HEADLESS: "true"
+      OPENENV_DEFAULT_WAIT_MS: "350"
+    ports:
+      - "3000:3000"
+      - "8000:8000"

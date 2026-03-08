@@ -1,0 +1,29 @@
+{
+  "name": "ehrgym",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/ehr"
+  ],
+  "scripts": {
+    "dev": "concurrently -k -n ehr,env \"npm run dev:ehr\" \"npm run dev:env\"",
+    "dev:ehr": "npm run dev --workspace @ehrgym/ehr",
+    "dev:env": "python3 -m uvicorn env_server.app.main:app --reload --host 0.0.0.0 --port 8000",
+    "clean:ehr": "npm run clean --workspace @ehrgym/ehr",
+    "build:ehr": "npm run build --workspace @ehrgym/ehr",
+    "typecheck": "npm run typecheck --workspace @ehrgym/ehr",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:seed": "prisma db seed"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.14",
+    "concurrently": "^9.1.2",
+    "prisma": "^6.5.0",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
+  }
+}

@@ -246,18 +246,89 @@ tasks/               scenario specs, rubrics, fixtures
 synthetic/           Synthea generation + FHIR ingest + seed tooling
 prisma/              schema + migrations
 docker/              Dockerfiles + entrypoints
+shared/              synthetic seed definitions + reset helpers
+scripts/             example agent loop and local helpers
 ```
 
 ---
 
 ## Quickstart
 
-This section will be filled in once the initial container wiring lands. Expect:
+The initial scaffold is now wired end-to-end.
 
-- one command to build/run the environment container  
-- an env server endpoint on `:8000`  
-- the EHR UI on `:3000` for debugging  
-- a minimal example agent loop calling `reset()` / `step()`
+### What is included
+
+- **Next.js EHR UI** in [apps/ehr](apps/ehr)
+  - patient list / chart entry
+  - chart review with encounters, labs, notes
+  - progress note authoring
+  - order drafting and signing
+  - encounter sign workflow
+- **FastAPI environment server** in [env_server](env_server)
+  - `POST /reset`
+  - `POST /step`
+  - `GET /state`
+  - `GET /healthz`
+- **Prisma + SQLite** schema and seed data in [prisma](prisma) and [shared](shared)
+- **Docker** single-container startup files in [docker](docker) and [docker-compose.yml](docker-compose.yml)
+
+### Local development
+
+Prerequisites:
+
+- Node.js 20+
+- Python 3.9+
+
+1. Install Node dependencies:
+
+  `npm install`
+
+2. Install the Python environment server package:
+
+  `python3 -m pip install .`
+
+  If you use a virtual environment or conda environment, activate it before running the remaining commands.
+
+3. Install the browser runtime for Playwright:
+
+  `python3 -m playwright install chromium`
+
+4. Copy environment variables if needed:
+
+  `cp .env.example .env`
+
+5. Initialize the SQLite database:
+
+  `npx prisma generate && npx prisma db push && npx prisma db seed`
+
+6. Start both processes:
+
+  `npm run dev`
+
+Available endpoints:
+
+- EHR UI: http://127.0.0.1:3000
+- Env server: http://127.0.0.1:8000
+
+### Docker
+
+Build and run the combined container:
+
+`docker compose up --build`
+
+This launches:
+
+- the Next.js EHR app on port `3000`
+- the FastAPI environment server on port `8000`
+
+### Minimal API flow
+
+1. `POST /reset`
+2. Read `observation` and `state`
+3. Send browser-style actions to `POST /step`
+4. Inspect `GET /state` for episode progress
+
+A starter agent loop is included in [scripts/example_agent.py](scripts/example_agent.py).
 
 ---
 

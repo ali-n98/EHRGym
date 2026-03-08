@@ -1,0 +1,125 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum EncounterStatus {
+  OPEN
+  SIGNED
+  CLOSED
+}
+
+enum NoteType {
+  PROGRESS
+  CONSULT
+  DISCHARGE
+}
+
+enum OrderCategory {
+  LAB
+  MED
+  IMAGING
+}
+
+enum OrderStatus {
+  DRAFT
+  PENDING_SIGNATURE
+  SIGNED
+}
+
+model Patient {
+  id              String      @id
+  mrn             String      @unique
+  fullName        String
+  age             Int
+  sex             String
+  allergiesJson   String
+  bannerFlagsJson String
+  summary         String
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  encounters      Encounter[]
+  scenarios       Scenario[]
+}
+
+model Encounter {
+  id             String          @id
+  patientId      String
+  type           String
+  reasonForVisit String
+  provider       String
+  startedAt      DateTime
+  status         EncounterStatus @default(OPEN)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  patient        Patient         @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  labs           LabResult[]
+  notes          ClinicalNote[]
+  orders         Order[]
+  scenarios      Scenario[]
+
+  @@index([patientId, startedAt])
+}
+
+model LabResult {
+  id             String    @id
+  encounterId    String
+  name           String
+  loinc          String?
+  value          String
+  unit           String
+  referenceRange String
+  abnormal       Boolean   @default(false)
+  collectedAt    DateTime
+  encounter      Encounter @relation(fields: [encounterId], references: [id], onDelete: Cascade)
+
+  @@index([encounterId, collectedAt])
+}
+
+model ClinicalNote {
+  id          String    @id
+  encounterId String
+  type        NoteType
+  title       String
+  author      String
+  content     String
+  signed      Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  encounter   Encounter @relation(fields: [encounterId], references: [id], onDelete: Cascade)
+
+  @@index([encounterId, createdAt])
+}
+
+model Order {
+  id             String        @id
+  encounterId    String
+  name           String
+  category       OrderCategory
+  parametersJson String
+  status         OrderStatus   @default(DRAFT)
+  rationale      String
+  createdAt      DateTime      @default(now())
+  encounter      Encounter     @relation(fields: [encounterId], references: [id], onDelete: Cascade)
+
+  @@index([encounterId, createdAt])
+}
+
+model Scenario {
+  id                       String    @id
+  patientId                String
+  encounterId              String
+  title                    String
+  objective                String
+  rubricJson               String
+  requiredOrdersJson       String
+  requiredNoteElementsJson String
+  createdAt                DateTime  @default(now())
+  patient                  Patient   @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  encounter                Encounter @relation(fields: [encounterId], references: [id], onDelete: Cascade)
+
+  @@index([patientId, encounterId])
+}

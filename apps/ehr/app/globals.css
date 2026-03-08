@@ -1,0 +1,1646 @@
+:root {
+  color-scheme: light;
+  font-family: var(--font-body), "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  background: #ffffff;
+  color: #000000;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background: #ffffff;
+  font-family: var(--font-body), "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  color: #000000;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+button,
+input,
+textarea,
+select,
+label,
+nav,
+.app-brand,
+.badge,
+.status-pill,
+.summary-flag,
+.workspace-sidebar,
+.workspace-header,
+.workspace-hero,
+.patient-hero,
+.workspace-toggle,
+.workspace-backlink,
+.workspace-icon-button,
+.workspace-profile,
+.table th,
+.ehr-table__header,
+.problem-list__status,
+.patient-hero__eyebrow {
+  font-family: var(--font-ui), "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.epic-shell {
+  min-height: 100vh;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 18px 20px 28px;
+}
+
+.epic-topbar {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 20px;
+  align-items: center;
+  padding: 4px 0 18px;
+  border: none;
+  border-bottom: 1px solid #e5e7eb;
+  border-radius: 0;
+  background: transparent;
+}
+
+.epic-topbar__brand,
+.epic-topbar__meta,
+.section-card h2,
+.section-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
+.app-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  text-decoration: none;
+}
+
+.app-brand__logo {
+  width: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.app-brand__logo--compact {
+  width: 42px;
+  height: 42px;
+}
+
+.app-brand__logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.app-brand__copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.app-brand__copy--compact {
+  gap: 1px;
+}
+
+.app-brand__copy strong {
+  font-size: 1.05rem;
+  line-height: 1.1;
+  color: #000000;
+}
+
+.app-brand__copy span {
+  font-size: 0.86rem;
+  color: #000000;
+}
+
+.epic-topbar__brand p,
+.epic-topbar__meta,
+.section-card p,
+.muted {
+  color: #000000;
+}
+
+.epic-topbar__tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.nav-link {
+  text-decoration: none;
+}
+
+.epic-tab,
+.epic-topbar__tabs .nav-link {
+  padding: 10px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  background: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.epic-tab--active,
+.epic-topbar__tabs .nav-link.is-active {
+  background: #eef2ff;
+  border-color: #c7d2fe;
+  color: #4338ca;
+}
+
+.epic-contextbar,
+.chart-activity-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+}
+
+.epic-contextbar {
+  margin-bottom: 16px;
+  border-radius: 18px;
+}
+
+.epic-contextbar p {
+  margin: 2px 0 0;
+}
+
+.epic-contextbar__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.chart-activity-bar {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  border-radius: 18px;
+}
+
+.chart-activity-bar a {
+  padding: 9px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  background: #f9fafb;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.chart-activity-bar a.is-active,
+.sidebar-nav a.is-active {
+  background: #eef2ff;
+  border-color: #c7d2fe;
+  color: #4338ca;
+}
+
+.grid {
+  display: grid;
+  gap: 14px;
+}
+
+.grid--2 {
+  grid-template-columns: 1.2fr 0.8fr;
+}
+
+.grid--3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.workspace-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.workspace-grid--home {
+  grid-template-columns: 260px minmax(0, 1fr) 320px;
+}
+
+.workspace-grid--chart {
+  grid-template-columns: 250px minmax(0, 1fr) 300px;
+}
+
+.center-pane,
+.right-rail,
+.left-rail,
+.patient-list,
+.sidebar-nav,
+.info-chips,
+.timeline,
+.data-list,
+.order-list,
+.note-list,
+.rail-list,
+.problem-list {
+  display: grid;
+  gap: 12px;
+}
+
+.patient-card,
+.sidebar-nav a,
+.info-chip,
+.list-row,
+.order-row,
+.note-row,
+.lab-row,
+.section-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+}
+
+.patient-card,
+.list-row,
+.order-row,
+.note-row,
+.lab-row,
+.section-card {
+  padding: 16px;
+}
+
+.patient-card:hover,
+.sidebar-nav a:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+}
+
+.patient-card header,
+.list-row header,
+.order-row header,
+.note-row header,
+.section-card__header,
+.banner,
+.patient-header,
+.patient-header__identity,
+.patient-header__facts {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.badge,
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.badge {
+  background: #f9fafb;
+  color: #4b5563;
+  border: 1px solid #e5e7eb;
+}
+
+.status-pill[data-status="OPEN"],
+.status-pill[data-status="DRAFT"] {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.status-pill[data-status="PENDING_SIGNATURE"] {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.status-pill[data-status="SIGNED"],
+.status-pill[data-status="CLOSED"] {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.info-chip {
+  padding: 10px 12px;
+}
+
+.sidebar-nav a {
+  padding: 12px 14px;
+  font-weight: 600;
+  background: #f9fafb;
+}
+
+.section-stack {
+  display: grid;
+  gap: 10px;
+}
+
+.section-card__header {
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.section-card__header h2 {
+  font-size: 1rem;
+  color: #111827;
+}
+
+.section-card__header p {
+  margin: 4px 0 0;
+  font-size: 0.86rem;
+}
+
+textarea,
+input,
+select {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: #ffffff;
+}
+
+textarea,
+input:not([type="checkbox"]):not([type="radio"]),
+select {
+  width: 100%;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  width: auto;
+  margin: 0;
+  accent-color: #35638c;
+}
+
+textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.field > span {
+  display: inline-block;
+}
+
+.form-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.checkbox-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  padding: 6px 0;
+  color: #42586d;
+}
+
+.checkbox-field__control {
+  flex: 0 0 auto;
+}
+
+.form-grid--2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.primary-button,
+.secondary-button {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-weight: 700;
+  width: auto;
+  min-width: 144px;
+}
+
+.primary-button {
+  background: #4f46e5;
+  color: #ffffff;
+  border-color: #4f46e5;
+}
+
+.secondary-button {
+  background: #ffffff;
+  color: #111827;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 10px 8px;
+  text-align: left;
+  border-bottom: 1px solid #d9e3ea;
+}
+
+.table th {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b7280;
+  background: #f9fafb;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.abnormal {
+  color: #b22222;
+  font-weight: 700;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.patient-header {
+  margin-bottom: 16px;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 22px;
+  background: #ffffff;
+}
+
+.patient-header__identity {
+  align-items: center;
+}
+
+.patient-header__identity h1 {
+  margin: 2px 0;
+  font-size: 1.45rem;
+}
+
+.patient-header__identity p,
+.patient-header__meta {
+  margin: 0;
+  color: #6b7280;
+}
+
+.patient-avatar,
+.patient-summary-card__avatar {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #4b5563;
+}
+
+.patient-header__facts {
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.patient-fact {
+  min-width: 180px;
+  display: grid;
+  gap: 3px;
+}
+
+.patient-fact strong {
+  font-size: 0.78rem;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.patient-fact--priority span {
+  color: #111827;
+  font-weight: 600;
+}
+
+.left-rail,
+.right-rail {
+  align-content: start;
+}
+
+.patient-summary-card,
+.patient-sidebar-card {
+  padding: 18px;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  background: #ffffff;
+}
+
+.patient-summary-card {
+  display: grid;
+  grid-template-columns: 54px 1fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.patient-summary-card h2,
+.patient-sidebar-card h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.patient-sidebar-card__label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9ca3af;
+  margin-bottom: 6px;
+}
+
+.rail-list__item,
+.summary-panel__row,
+.problem-list__item {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.rail-list__item span,
+.summary-panel__row span,
+.problem-list__item span:last-child {
+  color: #6b7280;
+}
+
+.ehr-table__header,
+.patient-card--table {
+  display: grid;
+  grid-template-columns: 1.2fr 0.7fr 1.3fr 0.6fr 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.ehr-table__header {
+  padding: 0 8px 12px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.patient-list--table {
+  margin-top: 10px;
+}
+
+.patient-card--table {
+  color: inherit;
+}
+
+.patient-card--table p,
+.patient-card--table strong {
+  margin: 0;
+}
+
+.section-card--rail,
+.section-card--summary {
+  background: #ffffff;
+}
+
+.section-card--worklist {
+  border-top: 1px solid #d8e0ea;
+}
+
+.section-card--chart {
+  border-top: 1px solid #d8e0ea;
+}
+
+.section-card--notes {
+  border-top: 1px solid #d8e0ea;
+}
+
+.section-card--orders {
+  border-top: 1px solid #d8e0ea;
+}
+
+.section-card--wrapup {
+  border-top: 1px solid #d8e0ea;
+}
+
+.section-card--problem-list {
+  border-top: 1px solid #d8e0ea;
+}
+
+.section-card--diagnosis-list {
+  border-top: 1px solid #d8e0ea;
+}
+
+.summary-panel,
+.summary-flags {
+  display: grid;
+  gap: 8px;
+}
+
+.summary-flag {
+  display: inline-flex;
+  padding: 6px 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  background: #f9fafb;
+  color: #4b5563;
+}
+
+.summary-flag--accent {
+  background: #eef2ff;
+  border-color: #c7d2fe;
+  color: #4338ca;
+}
+
+.subtab-strip {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.subtab-strip__item {
+  appearance: none;
+  padding: 9px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  background: #f9fafb;
+  font-size: 0.88rem;
+  color: #4b5563;
+  cursor: pointer;
+}
+
+.subtab-strip__item--active {
+  background: #eef2ff;
+  border-color: #c7d2fe;
+  color: #4338ca;
+  font-weight: 700;
+}
+
+.problem-list__item {
+  padding: 8px 10px;
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.problem-list__status {
+  color: #4f46e5;
+  font-weight: 700;
+}
+
+.problem-list__status--muted {
+  color: #6b7280;
+}
+
+.list-row--compact {
+  gap: 6px;
+}
+
+.list-row--compact p {
+  margin: 4px 0 0;
+}
+
+.primary-button:focus-visible,
+.secondary-button:focus-visible,
+.subtab-strip__item:focus-visible,
+.chart-activity-bar a:focus-visible,
+.sidebar-nav a:focus-visible,
+.patient-card:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+@media (max-width: 1080px) {
+  .grid--2,
+  .form-grid--2,
+  .grid--3 {
+    grid-template-columns: 1fr;
+  }
+
+  .workspace-grid--home,
+  .workspace-grid--chart,
+  .ehr-table__header,
+  .patient-card--table,
+  .patient-header,
+  .patient-header__facts,
+  .epic-topbar,
+  .epic-contextbar {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.dashboard-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 24px;
+  padding: 20px;
+}
+
+.dashboard-main {
+  display: grid;
+  gap: 18px;
+  align-content: start;
+}
+
+.workspace-sidebar {
+    gap: 16px;
+  position: sticky;
+  top: 20px;
+  align-self: start;
+  min-height: calc(100vh - 40px);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 24px;
+  padding: 18px;
+  border: 1px solid #e5e7eb;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.workspace-sidebar__brand {
+  padding-bottom: 8px;
+  padding-bottom: 2px;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.workspace-sidebar__sections {
+  display: grid;
+  gap: 14px;
+  gap: 10px;
+  align-content: start;
+}
+
+.workspace-sidebar__section {
+  display: grid;
+  gap: 6px;
+  gap: 6px;
+}
+
+.workspace-sidebar__heading,
+.patient-hero__eyebrow {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9ca3af;
+}
+
+.workspace-sidebar__nav,
+.task-list,
+.content-stack,
+.metric-card__stack,
+.workspace-header__breadcrumbs,
+.workspace-header__actions,
+.patient-hero__meta,
+.workspace-search,
+.note-list,
+.order-list {
+  display: grid;
+  gap: 8px;
+}
+
+.workspace-sidebar__nav {
+  gap: 3px;
+}
+
+.workspace-sidebar__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: #4b5563;
+  background: transparent;
+  font-weight: 600;
+}
+
+.workspace-sidebar__item:hover {
+  background: #f8fafc;
+  border-color: #e5e7eb;
+}
+
+.workspace-sidebar__item--active {
+  background: #ffffff;
+  border-color: #dbe3ee;
+  color: #1f3b63;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+}
+
+.workspace-sidebar__icon,
+.workspace-icon-button,
+.task-list__check {
+  width: 18px;
+  width: 16px;
+  height: 16px;
+  border-radius: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: #55708f;
+  flex: 0 0 auto;
+}
+
+.workspace-sidebar__icon svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+.workspace-sidebar__footer,
+.workspace-hero,
+.patient-hero,
+.metric-card,
+.note-row,
+.order-row,
+.list-row,
+.section-card,
+.patient-card,
+.patient-hero__panel,
+.workspace-header {
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.04);
+}
+
+.workspace-sidebar__footer {
+  padding: 16px;
+  border-radius: 20px;
+  display: grid;
+  gap: 10px;
+}
+
+.workspace-sidebar__footer p,
+.workspace-profile p,
+.metric-card p,
+.patient-hero p,
+.workspace-hero p {
+  margin: 0;
+  color: #6b7280;
+}
+
+.workspace-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  border-radius: 24px;
+}
+
+.workspace-header--home {
+  justify-content: space-between;
+}
+
+.workspace-header--chart {
+  align-items: flex-start;
+}
+
+.workspace-search {
+  grid-template-columns: auto minmax(260px, 1fr);
+  align-items: center;
+  width: min(520px, 100%);
+  padding: 12px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  background: #f9fafc;
+}
+
+.workspace-search input {
+  border: none;
+  padding: 0;
+  background: transparent;
+}
+
+.workspace-search input:focus-visible {
+  outline: none;
+}
+
+.workspace-search__icon {
+  color: #9ca3af;
+}
+
+.workspace-header__actions {
+  grid-auto-flow: column;
+  align-items: center;
+  justify-content: end;
+}
+
+.workspace-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-left: 4px;
+}
+
+.workspace-profile--panel {
+  padding: 8px 12px;
+  padding-left: 12px;
+  border: 1px solid #111111;
+  border-radius: 14px;
+}
+
+.workspace-profile--compact {
+  padding-left: 0;
+}
+
+.workspace-profile__avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #e8eef7;
+  color: #35526f;
+  font-weight: 700;
+}
+
+.workspace-toggle,
+.workspace-backlink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  background: #f9fafc;
+  color: #4b5563;
+  font-weight: 600;
+}
+
+.workspace-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.workspace-pills .nav-link,
+.workspace-pills--wide a {
+  padding: 10px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  background: #f9fafc;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.workspace-pills .nav-link.is-active,
+.workspace-pills--wide a.is-active {
+  background: #eef4ff;
+  border-color: #cddcf4;
+  color: #27476f;
+}
+
+.workspace-hero,
+.patient-hero {
+  border-radius: 28px;
+  padding: 24px;
+}
+
+.workspace-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+}
+
+.workspace-hero h1,
+.patient-hero h1 {
+  margin: 0 0 6px;
+  font-size: 2rem;
+  letter-spacing: -0.04em;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.metric-grid--chart {
+  align-items: stretch;
+}
+
+.metric-card {
+  border-radius: 22px;
+}
+
+.metric-card--wide {
+  grid-column: span 2;
+}
+
+.metric-card__value {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  color: #172554;
+}
+
+.content-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.content-grid--home {
+  grid-template-columns: minmax(0, 1.65fr) minmax(320px, 0.85fr);
+}
+
+.content-grid--chart {
+  grid-template-columns: minmax(0, 1.55fr) minmax(320px, 0.85fr);
+}
+
+.content-stack {
+  align-content: start;
+}
+
+.task-list__item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.task-list__check::before {
+  content: "✓";
+  font-weight: 700;
+}
+
+.patient-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.9fr);
+  gap: 18px;
+}
+
+.patient-hero__identity {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.patient-hero__panel {
+  padding: 16px;
+  border-radius: 20px;
+  display: grid;
+  gap: 6px;
+}
+
+.patient-hero__panel--status {
+  align-content: start;
+}
+
+.patient-hero__panel strong {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9ca3af;
+}
+
+.list-row--split {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.list-row--split p {
+  margin: 0;
+}
+
+.section-card,
+.patient-card,
+.note-row,
+.order-row,
+.list-row {
+  border-radius: 22px;
+}
+
+.section-card__header {
+  padding-bottom: 14px;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.section-card__header h2 {
+  font-size: 1.02rem;
+}
+
+.patient-card:hover,
+.workspace-backlink:hover,
+.workspace-icon-button:hover,
+.workspace-toggle:hover,
+.workspace-pills .nav-link:hover,
+.workspace-pills--wide a:hover {
+  border-color: #d4dde8;
+}
+
+@media (max-width: 1240px) {
+  .dashboard-shell,
+  .patient-hero,
+  .content-grid--home,
+  .content-grid--chart,
+  .metric-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .workspace-sidebar {
+    position: static;
+    min-height: auto;
+  }
+
+  .metric-card--wide {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 900px) {
+  .dashboard-shell {
+    padding: 14px;
+  }
+
+  .workspace-header,
+  .workspace-hero,
+  .patient-hero,
+  .list-row--split {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .workspace-header__actions {
+    grid-auto-flow: row;
+    justify-items: start;
+  }
+
+  .workspace-search {
+    width: 100%;
+    grid-template-columns: auto 1fr;
+  }
+
+  .ehr-table__header,
+  .patient-card--table {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dashboard-shell {
+  position: relative;
+  isolation: isolate;
+  background: #f3f4f6 !important;
+}
+
+.dashboard-shell::before {
+  content: none;
+}
+
+.dashboard-shell::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: linear-gradient(rgba(75, 85, 99, 0.18) 1px, transparent 1px), linear-gradient(90deg, rgba(75, 85, 99, 0.18) 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity: 0.04;
+  z-index: -3;
+  pointer-events: none;
+}
+
+body,
+.dashboard-main,
+.workspace-sidebar,
+.workspace-header,
+.workspace-hero,
+.patient-hero,
+.metric-card,
+.section-card,
+.note-row,
+.order-row,
+.list-row,
+.patient-card,
+.patient-hero__panel,
+.workspace-sidebar__footer,
+.patient-summary-card,
+.patient-sidebar-card,
+.patient-header,
+.epic-contextbar,
+.chart-activity-bar,
+.workspace-search,
+.problem-list__item,
+.table th,
+.table td,
+.subtab-strip__item,
+.workspace-sidebar__item,
+.workspace-toggle,
+.workspace-backlink,
+.workspace-icon-button,
+.summary-flag,
+.badge,
+.status-pill,
+.epic-tab,
+.epic-topbar__tabs .nav-link,
+.workspace-pills .nav-link,
+.workspace-pills--wide a,
+.sidebar-nav a,
+.secondary-button {
+  color: #111111 !important;
+  border-color: #111111 !important;
+  box-shadow: none !important;
+}
+
+body,
+.dashboard-main {
+  background: transparent !important;
+}
+
+.workspace-sidebar,
+.workspace-header,
+.workspace-hero,
+.patient-hero,
+.metric-card,
+.section-card,
+.note-row,
+.order-row,
+.list-row,
+.patient-card,
+.patient-hero__panel,
+.workspace-sidebar__footer,
+.patient-summary-card,
+.patient-sidebar-card,
+.patient-header,
+.epic-contextbar,
+.chart-activity-bar,
+.workspace-search,
+.problem-list__item,
+.table th,
+.table td,
+.subtab-strip__item,
+.workspace-sidebar__item,
+.workspace-toggle,
+.workspace-backlink,
+.workspace-icon-button,
+.summary-flag,
+.badge,
+.status-pill,
+.epic-tab,
+.epic-topbar__tabs .nav-link,
+.workspace-pills .nav-link,
+.workspace-pills--wide a,
+.sidebar-nav a,
+.secondary-button,
+input,
+textarea,
+select {
+  color: #111111 !important;
+  border-color: #111111 !important;
+  background: #ffffff !important;
+}
+
+.workspace-header,
+.workspace-sidebar,
+.workspace-hero,
+.patient-hero {
+  border-radius: 30px !important;
+}
+
+.workspace-sidebar__icon,
+.task-list__check,
+.workspace-profile__avatar,
+.patient-avatar,
+.patient-summary-card__avatar {
+  background: transparent !important;
+  color: #111111 !important;
+  border: none !important;
+}
+
+.primary-button,
+.subtab-strip__item--active,
+.chart-activity-bar a.is-active,
+.sidebar-nav a.is-active,
+.workspace-sidebar__item--active,
+.workspace-pills .nav-link.is-active,
+.workspace-pills--wide a.is-active,
+.epic-tab--active,
+.epic-topbar__tabs .nav-link.is-active,
+.summary-flag--accent,
+.problem-list__status {
+  background: #111111 !important;
+  color: #ffffff !important;
+  border-color: #111111 !important;
+}
+
+.status-pill[data-status="OPEN"],
+.status-pill[data-status="DRAFT"],
+.status-pill[data-status="PENDING_SIGNATURE"],
+.status-pill[data-status="SIGNED"],
+.status-pill[data-status="CLOSED"],
+.problem-list__status--muted {
+  background: transparent !important;
+  color: #111111 !important;
+  border: 1px solid #111111 !important;
+}
+
+.muted,
+.section-card p,
+.workspace-profile p,
+.metric-card p,
+.patient-hero p,
+.workspace-hero p,
+.summary-panel__row span,
+.rail-list__item span,
+.problem-list__item span:last-child,
+.table th,
+.ehr-table__header,
+.patient-fact strong,
+.workspace-sidebar__heading,
+.patient-hero__eyebrow,
+.patient-sidebar-card__label {
+  color: #525252 !important;
+}
+
+.app-brand__copy strong,
+.app-brand__copy span,
+.workspace-hero h1,
+.patient-hero h1,
+.patient-hero__title,
+.metric-card__value,
+.section-card__header h2,
+.note-row h3,
+.order-row h3,
+.patient-card strong,
+.workspace-hero__location {
+  color: #111111 !important;
+}
+
+.workspace-hero {
+  align-items: flex-start !important;
+  min-height: 240px;
+  min-height: 200px;
+}
+
+.workspace-hero__copy,
+.workspace-hero__aside {
+  display: grid;
+  gap: 14px;
+}
+
+.workspace-hero h1 {
+  display: block;
+  font-size: clamp(1.6rem, 3vw, 2.2rem) !important;
+  line-height: 1.05 !important;
+  letter-spacing: -0.03em;
+  text-transform: none;
+}
+
+.workspace-hero__eyebrow,
+.workspace-hero__location,
+.workspace-sidebar__heading,
+.workspace-toggle,
+.workspace-backlink,
+.badge,
+.status-pill,
+.summary-flag,
+.workspace-pills .nav-link,
+.workspace-pills--wide a,
+.workspace-sidebar__item,
+.sidebar-nav a,
+.epic-tab,
+.epic-topbar__tabs .nav-link,
+.subtab-strip__item,
+.section-card__header p,
+.app-brand__copy span {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.76rem !important;
+}
+
+.workspace-hero__lede,
+.patient-hero__lede,
+.note-row p,
+.order-row p,
+.list-row p,
+.summary-panel,
+.task-list,
+.table td,
+textarea,
+input,
+select {
+  font-family: var(--font-ui), "IBM Plex Sans", "Segoe UI", system-ui, sans-serif !important;
+}
+
+.workspace-hero__location {
+  justify-self: start;
+  padding: 8px 10px;
+  border: 1px solid #111111;
+  border-radius: 999px;
+}
+
+.workspace-hero__aside {
+  justify-items: start;
+  align-self: end;
+  align-self: start;
+}
+
+.patient-hero {
+  grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.9fr) !important;
+}
+
+.patient-hero__identity {
+  align-items: start !important;
+}
+
+.patient-hero__title {
+  font-size: clamp(1.85rem, 3.4vw, 2.8rem) !important;
+  line-height: 1.02 !important;
+  letter-spacing: -0.03em;
+  text-transform: none;
+  margin: 0;
+}
+
+.workspace-search__icon,
+.workspace-icon-button,
+.workspace-sidebar__icon {
+  color: #111111 !important;
+}
+
+.workspace-icon-button,
+.workspace-sidebar__icon {
+  background: transparent !important;
+}
+
+.patient-card:hover,
+.workspace-backlink:hover,
+.workspace-icon-button:hover,
+.workspace-toggle:hover,
+.workspace-pills .nav-link:hover,
+.workspace-pills--wide a:hover,
+.workspace-sidebar__item:hover,
+.sidebar-nav a:hover,
+.primary-button:hover,
+.secondary-button:hover {
+  background: #111111 !important;
+  color: #ffffff !important;
+  border-color: #111111 !important;
+}
+
+.workspace-icon-button:hover,
+.workspace-toggle:hover,
+.workspace-backlink:hover,
+.workspace-pills .nav-link:hover,
+.workspace-pills--wide a:hover,
+.workspace-sidebar__item:hover,
+.sidebar-nav a:hover,
+.secondary-button:hover,
+.primary-button:hover {
+  text-decoration: none;
+}
+
+.workspace-sidebar__item:hover .workspace-sidebar__icon,
+.workspace-sidebar__item--active .workspace-sidebar__icon,
+.workspace-icon-button:hover,
+.workspace-toggle:hover,
+.workspace-backlink:hover,
+.workspace-pills .nav-link:hover,
+.workspace-pills--wide a:hover,
+.sidebar-nav a:hover {
+  color: #ffffff !important;
+}
+
+.workspace-sidebar__item:hover .workspace-sidebar__icon {
+  background: transparent !important;
+  border-color: transparent !important;
+}
+
+.patient-card:hover {
+  background: #111111 !important;
+  color: #ffffff !important;
+  border-color: #111111 !important;
+}
+
+.workspace-toggle,
+.workspace-backlink,
+.workspace-icon-button,
+.primary-button,
+.secondary-button {
+  padding: 8px 11px !important;
+  min-height: 0 !important;
+  border-radius: 10px !important;
+}
+
+.workspace-toggle--static {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: default;
+}
+
+.workspace-toggle--static:hover {
+  background: #ffffff !important;
+  color: #111111 !important;
+  border-color: #111111 !important;
+}
+
+.workspace-toggle__icon {
+  width: 14px;
+  height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  padding: 3px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  box-sizing: content-box;
+}
+
+.workspace-toggle__icon svg {
+  width: 14px;
+  height: 14px;
+  display: block;
+}
+
+.workspace-profile--panel .workspace-profile__avatar {
+  border: 1px solid #111111 !important;
+  border-radius: 999px;
+}
+
+.workspace-sidebar__icon {
+  font-size: 0.78rem !important;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.patient-card:hover .muted,
+.patient-card:hover .status-pill,
+.patient-card:hover .summary-flag,
+.patient-card:hover strong,
+.patient-card:hover p {
+  color: #ffffff !important;
+  border-color: #ffffff !important;
+}
+
+.patient-card:hover .status-pill {
+  background: transparent !important;
+}
+
+@media (max-width: 900px) {
+  .dashboard-shell::after {
+    background-size: 20px 20px;
+  }
+}
