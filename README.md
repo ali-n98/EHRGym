@@ -17,6 +17,10 @@ short_description: Synthetic EHR environment for browser-based agents.
 
 **EHRGym** is a containerized environment for training and evaluating computer-use agents in an Epic-like electronic health record (EHR) workflow.
 
+<p align="center">
+  <img src="hf_spaces_ui_demo.png" alt="EHRGym UI Demo" width="90%">
+</p>
+
 It combines:
 
 - A web-based EHR built with **Next.js + TypeScript**  
