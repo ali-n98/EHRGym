@@ -21,7 +21,7 @@ ENV PORT=3000 \
 RUN npm install \
     && python3 -m venv /app/.venv \
     && pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir . \
+    && pip install --no-cache-dir ".[server]" \
     && python -m playwright install --with-deps chromium \
     && npx prisma generate \
     && npx prisma db push \
