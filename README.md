@@ -1,32 +1,15 @@
----
-title: EHRGym
-emoji: 🏥
-colorFrom: blue
-colorTo: green
-sdk: docker
-app_port: 7860
-tags:
-  - openenv
-  - rl-environment
-  - ehr
-  - grpo
-  - trl
-  - clinical
-  - computer-use
-pinned: false
-license: apache-2.0
----
-
 # EHRGym
 
 <p align="center">
   <img src="ehrgym_logo.png" alt="EHRGym Logo" width="50%">
 </p>
 
-[![OpenEnv](https://img.shields.io/badge/OpenEnv-EHRGym-blue?logo=huggingface)](https://huggingface.co/spaces/openenv-community/EHRGym)
-[![TRL GRPO](https://img.shields.io/badge/TRL-GRPO%20Training-orange?logo=huggingface)](https://huggingface.co/docs/trl/grpo_trainer)
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/adtserapio/EHRGym/blob/main/notebooks/ehrgym_grpo_training.ipynb)
-[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
+<p align="center">
+  <a href="https://huggingface.co/spaces/openenv-community/EHRGym"><img src="https://img.shields.io/badge/OpenEnv-EHRGym-blue?logo=huggingface" alt="OpenEnv"></a>
+  <a href="https://huggingface.co/docs/trl/grpo_trainer"><img src="https://img.shields.io/badge/TRL-GRPO%20Training-orange?logo=huggingface" alt="TRL GRPO"></a>
+  <a href="https://colab.research.google.com/github/adtserapio/EHRGym/blob/main/notebooks/ehrgym_grpo_training.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-green.svg" alt="License"></a>
+</p>
 
 **EHRGym** is an [OpenEnv](https://huggingface.co/openenv-community)-compatible environment for training and evaluating computer-use agents in an Epic-like electronic health record (EHR) workflow. It integrates natively with [TRL](https://github.com/huggingface/trl)'s `GRPOTrainer` for GRPO fine-tuning.
 
