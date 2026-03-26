@@ -40,11 +40,12 @@ type ApiPatient = {
     }>;
     orders: Array<{
       id: string;
+      encounterId: string | null;
       name: string;
       category: string;
-      parametersJson: string;
+      parametersJson: string | null;
       status: string;
-      rationale: string;
+      rationale: string | null;
       createdAt: Date;
     }>;
   }>;
@@ -62,7 +63,7 @@ type ApiPatient = {
 export async function GET(_: Request, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
 
-  const patient: ApiPatient | null = await prisma.patient.findUnique({
+  const patient = await prisma.patient.findUnique({
     where: { id },
     include: {
       encounters: {
@@ -95,10 +96,13 @@ export async function GET(_: Request, context: { params: Promise<{ id: string }>
       summary: patient.summary,
       encounters: patient.encounters.map((encounter: ApiPatient["encounters"][number]) => ({
         ...encounter,
-        orders: encounter.orders.map((order: ApiPatient["encounters"][number]["orders"][number]) => ({
-          ...order,
-          parameters: parseJsonValue<Record<string, string>>(order.parametersJson)
-        }))
+        orders: encounter.orders
+          .filter((order) => order.encounterId !== null)
+          .map((order: ApiPatient["encounters"][number]["orders"][number]) => ({
+            ...order,
+            parameters: parseJsonValue<Record<string, string>>(order.parametersJson ?? '{"freeText":""}'),
+            rationale: order.rationale ?? ""
+          }))
       })),
       scenarios: patient.scenarios.map((scenario: ApiPatient["scenarios"][number]) => ({
         ...scenario,

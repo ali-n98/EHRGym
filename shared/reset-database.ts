@@ -1,6 +1,7 @@
 import type { PrismaClient } from "@prisma/client";
 
 import { seedPatients } from "./seed-data";
+import { seedOrderCatalogFromCsv } from "./order-catalog.js";
 
 export async function resetDatabase(prisma: PrismaClient) {
   await prisma.order.deleteMany();
@@ -56,7 +57,7 @@ export async function resetDatabase(prisma: PrismaClient) {
               create: encounter.orders.map((order) => ({
                 id: order.id,
                 name: order.name,
-                category: order.category,
+                category: order.category as unknown as never,
                 parametersJson: JSON.stringify(order.parameters),
                 status: order.status,
                 rationale: order.rationale,
@@ -79,4 +80,11 @@ export async function resetDatabase(prisma: PrismaClient) {
       }
     });
   }
+
+  const orderCatalogCount = await seedOrderCatalogFromCsv(prisma);
+
+  return {
+    patientCount: seedPatients.length,
+    orderCatalogCount
+  };
 }

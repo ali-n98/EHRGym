@@ -19,12 +19,6 @@ enum NoteType {
   DISCHARGE
 }
 
-enum OrderCategory {
-  LAB
-  MED
-  IMAGING
-}
-
 enum OrderStatus {
   DRAFT
   PENDING_SIGNATURE
@@ -96,16 +90,20 @@ model ClinicalNote {
 
 model Order {
   id             String        @id
-  encounterId    String
+  encounterId    String?
   name           String
-  category       OrderCategory
-  parametersJson String
+  category       String
+  cat2           String?
+  cat3           String?
+  parametersJson String?
   status         OrderStatus   @default(DRAFT)
-  rationale      String
+  rationale      String?
+  isCatalogEntry Boolean       @default(false)
   createdAt      DateTime      @default(now())
-  encounter      Encounter     @relation(fields: [encounterId], references: [id], onDelete: Cascade)
+  encounter      Encounter?    @relation(fields: [encounterId], references: [id], onDelete: Cascade)
 
   @@index([encounterId, createdAt])
+  @@index([isCatalogEntry, category, cat2, cat3, name])
 }
 
 model Scenario {

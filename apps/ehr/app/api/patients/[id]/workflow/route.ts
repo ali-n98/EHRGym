@@ -16,7 +16,7 @@ type WorkflowPayload =
       type: "create_order";
       encounterId: string;
       name: string;
-      category: "LAB" | "MED" | "IMAGING";
+      category: string;
       parameters: string;
       rationale: string;
       submitForSignature: boolean;
@@ -32,10 +32,6 @@ type WorkflowPayload =
 
 function isNonEmptyString(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
-}
-
-function isOrderCategory(value: unknown): value is "LAB" | "MED" | "IMAGING" {
-  return value === "LAB" || value === "MED" || value === "IMAGING";
 }
 
 function getTrimmedString(value: unknown): string | null {
@@ -83,11 +79,11 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
   if (payload.type === "create_order") {
     const encounterId = getTrimmedString(payload.encounterId);
     const name = getTrimmedString(payload.name);
-    const category = payload.category;
+    const category = getTrimmedString(payload.category);
     const parameters = getTrimmedString(payload.parameters);
     const rationale = getTrimmedString(payload.rationale);
 
-    if (!encounterId || !name || !parameters || !rationale || !isOrderCategory(category)) {
+    if (!encounterId || !name || !parameters || !rationale || !category) {
       return NextResponse.json({ error: "Missing order fields" }, { status: 400 });
     }
 
@@ -108,9 +104,9 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
         id: order.id,
         name: order.name,
         category: order.category,
-        parameters: { freeText: JSON.parse(order.parametersJson).freeText as string },
+        parameters: { freeText: order.parametersJson ? ((JSON.parse(order.parametersJson).freeText as string) ?? "") : "" },
         status: order.status,
-        rationale: order.rationale,
+        rationale: order.rationale ?? "",
         createdAt: order.createdAt.toISOString()
       }
     });
@@ -131,9 +127,9 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
         id: order.id,
         name: order.name,
         category: order.category,
-        parameters: { freeText: JSON.parse(order.parametersJson).freeText as string },
+        parameters: { freeText: order.parametersJson ? ((JSON.parse(order.parametersJson).freeText as string) ?? "") : "" },
         status: order.status,
-        rationale: order.rationale,
+        rationale: order.rationale ?? "",
         createdAt: order.createdAt.toISOString()
       }
     });
