@@ -6,7 +6,6 @@ import { revalidatePath } from "next/cache";
 
 import { prisma } from "../../../lib/db";
 
-type OrderCategoryValue = "LAB" | "MED" | "IMAGING";
 type OrderStatusValue = "DRAFT" | "PENDING_SIGNATURE" | "SIGNED";
 
 function getRequiredField(formData: FormData, key: string) {
@@ -44,7 +43,7 @@ export async function createOrderAction(formData: FormData) {
   const patientId = getRequiredField(formData, "patientId");
   const encounterId = getRequiredField(formData, "encounterId");
   const name = getRequiredField(formData, "name");
-  const category = getRequiredField(formData, "category") as OrderCategoryValue;
+  const category = getRequiredField(formData, "category");
   const parameters = getRequiredField(formData, "parameters");
   const rationale = getRequiredField(formData, "rationale");
   const submitForSignature = formData.get("submitForSignature") === "on";

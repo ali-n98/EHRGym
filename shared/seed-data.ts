@@ -22,7 +22,7 @@ export type SeedNote = {
 export type SeedOrder = {
   id: string;
   name: string;
-  category: "LAB" | "MED" | "IMAGING";
+  category: string;
   parameters: Record<string, string>;
   status: "DRAFT" | "PENDING_SIGNATURE" | "SIGNED";
   rationale: string;

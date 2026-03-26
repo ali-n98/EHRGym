@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { PatientWorkspace, type PatientWorkspaceData } from "../../../components/patient-workspace";
 import { parseJsonValue } from "../../../lib/chart";
 import { prisma } from "../../../lib/db";
+import { loadOrderCatalogFromDb } from "../../../../../shared/order-catalog";
 
 type PatientPageData = {
   id: string;
@@ -43,9 +44,9 @@ type PatientPageData = {
       id: string;
       name: string;
       category: string;
-      parametersJson: string;
+      parametersJson: string | null;
       status: string;
-      rationale: string;
+      rationale: string | null;
       createdAt: Date;
     }>;
   }>;
@@ -68,8 +69,9 @@ type PatientPageProps = {
 
 export default async function PatientPage({ params }: PatientPageProps) {
   const { id } = await params;
+  const orderCatalog = await loadOrderCatalogFromDb(prisma);
 
-  const patient: PatientPageData | null = await prisma.patient.findUnique({
+  const patient = await prisma.patient.findUnique({
     where: { id },
     include: {
       encounters: {
@@ -129,15 +131,17 @@ export default async function PatientPage({ params }: PatientPageProps) {
         ...note,
         createdAt: note.createdAt.toISOString()
       })),
-      orders: encounter.orders.map((order) => ({
-        id: order.id,
-        name: order.name,
-        category: order.category,
-        parameters: parseJsonValue<Record<string, string>>(order.parametersJson),
-        status: order.status,
-        rationale: order.rationale,
-        createdAt: order.createdAt.toISOString()
-      }))
+      orders: encounter.orders
+        .filter((order) => order.encounterId !== null)
+        .map((order) => ({
+          id: order.id,
+          name: order.name,
+          category: order.category,
+          parameters: parseJsonValue<Record<string, string>>(order.parametersJson ?? '{"freeText":""}'),
+          status: order.status,
+          rationale: order.rationale ?? "",
+          createdAt: order.createdAt.toISOString()
+        }))
     })),
     scenarios: patient.scenarios.map((item) => ({
       id: item.id,
@@ -150,5 +154,5 @@ export default async function PatientPage({ params }: PatientPageProps) {
     }))
   };
 
-  return <PatientWorkspace initialPatient={initialPatient} />;
+  return <PatientWorkspace initialPatient={initialPatient} orderCatalog={orderCatalog} />;
 }

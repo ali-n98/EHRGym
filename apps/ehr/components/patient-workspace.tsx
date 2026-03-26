@@ -79,17 +79,60 @@ type WorkflowResponse =
   | { encounter: { id: string; status: string } }
   | { ok: true };
 
-type PatientWorkspaceProps = {
-  initialPatient: PatientWorkspaceData;
+type OrderCatalogEntry = {
+  orderName: string;
+  cat1: string;
+  cat2: string;
+  cat3: string;
 };
 
-export function PatientWorkspace({ initialPatient }: PatientWorkspaceProps) {
+type PatientWorkspaceProps = {
+  initialPatient: PatientWorkspaceData;
+  orderCatalog: OrderCatalogEntry[];
+};
+
+function uniqueInOrder(values: string[]): string[] {
+  const seen = new Set<string>();
+  const uniqueValues: string[] = [];
+
+  for (const value of values) {
+    if (seen.has(value)) {
+      continue;
+    }
+    seen.add(value);
+    uniqueValues.push(value);
+  }
+
+  return uniqueValues;
+}
+
+function buildInitialOrderSelection(orderCatalog: OrderCatalogEntry[]) {
+  const category = uniqueInOrder(orderCatalog.map((entry) => entry.cat1))[0] ?? "";
+  const higherGroup = uniqueInOrder(orderCatalog.filter((entry) => entry.cat1 === category).map((entry) => entry.cat2))[0] ?? "";
+  const lowerGroup =
+    uniqueInOrder(orderCatalog.filter((entry) => entry.cat1 === category && entry.cat2 === higherGroup).map((entry) => entry.cat3))[0] ?? "";
+  const orderName =
+    uniqueInOrder(
+      orderCatalog
+        .filter((entry) => entry.cat1 === category && entry.cat2 === higherGroup && entry.cat3 === lowerGroup)
+        .map((entry) => entry.orderName)
+    )[0] ?? "";
+
+  return { category, higherGroup, lowerGroup, orderName };
+}
+
+export function PatientWorkspace({ initialPatient, orderCatalog }: PatientWorkspaceProps) {
   const [patient, setPatient] = useState(initialPatient);
   const [notePending, setNotePending] = useState(false);
   const [orderPending, setOrderPending] = useState(false);
   const [signingOrderId, setSigningOrderId] = useState<string | null>(null);
   const [signingEncounter, setSigningEncounter] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const initialOrderSelection = useMemo(() => buildInitialOrderSelection(orderCatalog), [orderCatalog]);
+  const [selectedCategory, setSelectedCategory] = useState(initialOrderSelection.category);
+  const [selectedHigherGroup, setSelectedHigherGroup] = useState(initialOrderSelection.higherGroup);
+  const [selectedLowerGroup, setSelectedLowerGroup] = useState(initialOrderSelection.lowerGroup);
+  const [selectedOrderName, setSelectedOrderName] = useState(initialOrderSelection.orderName);
 
   const activeEncounter = patient.encounters[0];
   const scenario =
@@ -105,6 +148,24 @@ export function PatientWorkspace({ initialPatient }: PatientWorkspaceProps) {
   const visitDiagnoses = useMemo(
     () => Array.from(new Set([scenario?.title ?? activeEncounter?.reasonForVisit, activeEncounter?.type, patient.summary].filter(Boolean))),
     [activeEncounter?.reasonForVisit, activeEncounter?.type, patient.summary, scenario?.title]
+  );
+  const getHigherGroupOptions = (category: string) =>
+    uniqueInOrder(orderCatalog.filter((entry) => entry.cat1 === category).map((entry) => entry.cat2));
+  const getLowerGroupOptions = (category: string, higherGroup: string) =>
+    uniqueInOrder(orderCatalog.filter((entry) => entry.cat1 === category && entry.cat2 === higherGroup).map((entry) => entry.cat3));
+  const getOrderNameOptions = (category: string, higherGroup: string, lowerGroup: string) =>
+    uniqueInOrder(
+      orderCatalog
+        .filter((entry) => entry.cat1 === category && entry.cat2 === higherGroup && entry.cat3 === lowerGroup)
+        .map((entry) => entry.orderName)
+    );
+
+  const categoryOptions = useMemo(() => uniqueInOrder(orderCatalog.map((entry) => entry.cat1)), [orderCatalog]);
+  const higherGroupOptions = useMemo(() => getHigherGroupOptions(selectedCategory), [orderCatalog, selectedCategory]);
+  const lowerGroupOptions = useMemo(() => getLowerGroupOptions(selectedCategory, selectedHigherGroup), [orderCatalog, selectedCategory, selectedHigherGroup]);
+  const orderNameOptions = useMemo(
+    () => getOrderNameOptions(selectedCategory, selectedHigherGroup, selectedLowerGroup),
+    [orderCatalog, selectedCategory, selectedHigherGroup, selectedLowerGroup]
   );
 
   const globalNavItems = [
@@ -215,6 +276,12 @@ export function PatientWorkspace({ initialPatient }: PatientWorkspaceProps) {
     setErrorMessage(null);
     setOrderPending(true);
 
+    if (!selectedCategory || !selectedOrderName) {
+      setErrorMessage("Please choose a valid order path before submitting.");
+      setOrderPending(false);
+      return;
+    }
+
     const form = event.currentTarget;
     const formData = new FormData(form);
 
@@ -222,8 +289,8 @@ export function PatientWorkspace({ initialPatient }: PatientWorkspaceProps) {
       const result = await postWorkflow({
         type: "create_order",
         encounterId: activeEncounter.id,
-        name: formData.get("name"),
-        category: formData.get("category"),
+        name: selectedOrderName,
+        category: selectedCategory,
         parameters: formData.get("parameters"),
         rationale: formData.get("rationale"),
         submitForSignature: formData.get("submitForSignature") === "on"
@@ -236,6 +303,14 @@ export function PatientWorkspace({ initialPatient }: PatientWorkspaceProps) {
         }));
       }
       form.reset();
+      const nextCategory = categoryOptions[0] ?? "";
+      const nextHigherGroup = getHigherGroupOptions(nextCategory)[0] ?? "";
+      const nextLowerGroup = getLowerGroupOptions(nextCategory, nextHigherGroup)[0] ?? "";
+      const nextOrderName = getOrderNameOptions(nextCategory, nextHigherGroup, nextLowerGroup)[0] ?? "";
+      setSelectedCategory(nextCategory);
+      setSelectedHigherGroup(nextHigherGroup);
+      setSelectedLowerGroup(nextLowerGroup);
+      setSelectedOrderName(nextOrderName);
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : "Failed to save order");
     } finally {
@@ -439,15 +514,94 @@ export function PatientWorkspace({ initialPatient }: PatientWorkspaceProps) {
                 <form onSubmit={handleCreateOrder} className="list-row" data-testid="order-form">
                   <div className="form-grid">
                     <label className="field">
-                      <span className="muted">Order name</span>
-                      <input aria-label="Order name" name="name" placeholder="Normal saline bolus" required />
+                      <span className="muted">Category</span>
+                      <select
+                        aria-label="Order category"
+                        name="category"
+                        required
+                        value={selectedCategory}
+                        onChange={(event) => {
+                          const nextCategory = event.currentTarget.value;
+                          const nextHigherGroup = getHigherGroupOptions(nextCategory)[0] ?? "";
+                          const nextLowerGroup = getLowerGroupOptions(nextCategory, nextHigherGroup)[0] ?? "";
+                          const nextOrderName = getOrderNameOptions(nextCategory, nextHigherGroup, nextLowerGroup)[0] ?? "";
+
+                          setSelectedCategory(nextCategory);
+                          setSelectedHigherGroup(nextHigherGroup);
+                          setSelectedLowerGroup(nextLowerGroup);
+                          setSelectedOrderName(nextOrderName);
+                        }}
+                      >
+                        {categoryOptions.map((category) => (
+                          <option key={category} value={category}>
+                            {category}
+                          </option>
+                        ))}
+                      </select>
                     </label>
                     <label className="field">
-                      <span className="muted">Category</span>
-                      <select aria-label="Order category" name="category" defaultValue="LAB">
-                        <option value="LAB">Lab</option>
-                        <option value="MED">Medication</option>
-                        <option value="IMAGING">Imaging</option>
+                      <span className="muted">Higher group</span>
+                      <select
+                        aria-label="Order higher group"
+                        name="higherGroup"
+                        required
+                        value={selectedHigherGroup}
+                        onChange={(event) => {
+                          const nextHigherGroup = event.currentTarget.value;
+                          const nextLowerGroup = getLowerGroupOptions(selectedCategory, nextHigherGroup)[0] ?? "";
+                          const nextOrderName = getOrderNameOptions(selectedCategory, nextHigherGroup, nextLowerGroup)[0] ?? "";
+
+                          setSelectedHigherGroup(nextHigherGroup);
+                          setSelectedLowerGroup(nextLowerGroup);
+                          setSelectedOrderName(nextOrderName);
+                        }}
+                        disabled={!selectedCategory || higherGroupOptions.length === 0}
+                      >
+                        {higherGroupOptions.map((higherGroup) => (
+                          <option key={higherGroup} value={higherGroup}>
+                            {higherGroup}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="field">
+                      <span className="muted">lower group</span>
+                      <select
+                        aria-label="Order lower group"
+                        name="lowerGroup"
+                        required
+                        value={selectedLowerGroup}
+                        onChange={(event) => {
+                          const nextLowerGroup = event.currentTarget.value;
+                          const nextOrderName = getOrderNameOptions(selectedCategory, selectedHigherGroup, nextLowerGroup)[0] ?? "";
+
+                          setSelectedLowerGroup(nextLowerGroup);
+                          setSelectedOrderName(nextOrderName);
+                        }}
+                        disabled={!selectedHigherGroup || lowerGroupOptions.length === 0}
+                      >
+                        {lowerGroupOptions.map((lowerGroup) => (
+                          <option key={lowerGroup} value={lowerGroup}>
+                            {lowerGroup}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="field">
+                      <span className="muted">Order search</span>
+                      <select
+                        aria-label="Order search"
+                        name="name"
+                        required
+                        value={selectedOrderName}
+                        onChange={(event) => setSelectedOrderName(event.currentTarget.value)}
+                        disabled={!selectedLowerGroup || orderNameOptions.length === 0}
+                      >
+                        {orderNameOptions.map((orderName) => (
+                          <option key={orderName} value={orderName}>
+                            {orderName}
+                          </option>
+                        ))}
                       </select>
                     </label>
                     <label className="field">

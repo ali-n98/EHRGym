@@ -20,7 +20,7 @@ async def main() -> None:
 
         suffix = str(int(time()))
         note_title = f"Progress Note Follow-up {suffix}"
-        order_name = f"Normal saline bolus {suffix}"
+        order_name = ""
 
         await page.goto("http://127.0.0.1:3000/patient/pat-1001", wait_until="networkidle")
         print("loaded", page.url)
@@ -42,11 +42,14 @@ async def main() -> None:
         await page.locator("article.note-row", has_text=note_title).last.wait_for(timeout=5000)
         print("has_new_note", await page.locator("article.note-row", has_text=note_title).count())
 
-        await page.get_by_label("Order name").fill(order_name)
-        await page.get_by_label("Order category").select_option("MED")
+        await page.get_by_label("Order category").select_option(index=0)
+        await page.get_by_label("Order higher group").select_option(index=0)
+        await page.get_by_label("Order lower group").select_option(index=0)
+        await page.get_by_label("Order search").select_option(index=0)
+        order_name = await page.get_by_label("Order search").input_value()
         await page.get_by_label("Order parameters").fill("1 L IV once")
         await page.get_by_label("Order rationale").fill("Volume repletion for AKI")
-        await page.get_by_label("Submit order for signature").check()
+        await page.get_by_label("Sign order immediately").check()
         await page.get_by_test_id("save-order-button").click()
         await page.locator("article.order-row", has_text=order_name).first.wait_for(timeout=5000)
         print("has_new_order", await page.locator("article.order-row", has_text=order_name).count())

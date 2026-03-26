@@ -5,9 +5,9 @@ import { resetDatabase } from "../shared/reset-database";
 const prisma = new PrismaClient();
 
 async function main() {
-  await resetDatabase(prisma);
-  const patientCount = await prisma.patient.count();
-  console.log(`Seeded ${patientCount} synthetic patients.`);
+  const result = await resetDatabase(prisma);
+  console.log(`Seeded ${result.patientCount} synthetic patients.`);
+  console.log(`Seeded ${result.orderCatalogCount} order catalog rows from CSV.`);
 }
 
 main()
