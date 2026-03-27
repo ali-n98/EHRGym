@@ -1,0 +1,16 @@
+order_name,cat1,cat2,cat3
+Basic metabolic panel,LAB,Chemistry,Renal
+Complete blood count,LAB,Hematology,Cell counts
+Troponin I,LAB,Cardiac,Biomarkers
+Lipase,LAB,GI,Pancreatic
+Lactate,LAB,Sepsis,Perfusion
+Chest X-ray,IMAGING,Radiology,Thoracic
+CT chest with contrast,IMAGING,Radiology,Cross-sectional
+CT abdomen pelvis with contrast,IMAGING,Radiology,Cross-sectional
+Normal saline bolus,MED,Fluids,Crystalloid
+Lactated Ringer bolus,MED,Fluids,Crystalloid
+Ceftriaxone IV,MED,Antibiotics,Beta-lactam
+Azithromycin PO,MED,Antibiotics,Macrolide
+Heparin infusion,MED,Anticoagulation,Continuous
+Telemetry monitoring,MONITORING,Cardiac,Observation
+Droplet precautions,NURSING,Isolation,Precautions
