@@ -48,6 +48,15 @@ type ApiPatient = {
       rationale: string | null;
       createdAt: Date;
     }>;
+    referrals: Array<{
+      id: string;
+      encounterId: string | null;
+      referredDepartment: string;
+      referredFirstName: string;
+      referredLastName: string;
+      reason: string | null;
+      createdAt: Date;
+    }>;
   }>;
   scenarios: Array<{
     id: string;
@@ -71,7 +80,8 @@ export async function GET(_: Request, context: { params: Promise<{ id: string }>
         include: {
           labs: { orderBy: { collectedAt: "desc" } },
           notes: { orderBy: { createdAt: "desc" } },
-          orders: { orderBy: { createdAt: "desc" } }
+          orders: { orderBy: { createdAt: "desc" } },
+          referrals: { orderBy: { createdAt: "desc" } }
         }
       },
       scenarios: {
@@ -102,6 +112,16 @@ export async function GET(_: Request, context: { params: Promise<{ id: string }>
             ...order,
             parameters: parseJsonValue<Record<string, string>>(order.parametersJson ?? '{"freeText":""}'),
             rationale: order.rationale ?? ""
+          })),
+        referrals: encounter.referrals
+          .filter((referral) => referral.encounterId !== null)
+          .map((referral: ApiPatient["encounters"][number]["referrals"][number]) => ({
+            ...referral,
+            referredProvider:
+              referral.referredFirstName.trim() && referral.referredLastName.trim()
+                ? `${referral.referredFirstName} ${referral.referredLastName}`
+                : "N/A (department only)",
+            reason: referral.reason ?? ""
           }))
       })),
       scenarios: patient.scenarios.map((scenario: ApiPatient["scenarios"][number]) => ({

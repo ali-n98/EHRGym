@@ -4,6 +4,7 @@ import { PatientWorkspace, type PatientWorkspaceData } from "../../../components
 import { parseJsonValue } from "../../../lib/chart";
 import { prisma } from "../../../lib/db";
 import { loadOrderCatalogFromDb } from "../../../../../shared/order-catalog";
+import { loadProviderCatalogFromDb } from "../../../../../shared/provider-catalog";
 
 type PatientPageData = {
   id: string;
@@ -49,6 +50,14 @@ type PatientPageData = {
       rationale: string | null;
       createdAt: Date;
     }>;
+    referrals: Array<{
+      id: string;
+      referredDepartment: string;
+      referredFirstName: string;
+      referredLastName: string;
+      reason: string | null;
+      createdAt: Date;
+    }>;
   }>;
   scenarios: Array<{
     id: string;
@@ -70,6 +79,7 @@ type PatientPageProps = {
 export default async function PatientPage({ params }: PatientPageProps) {
   const { id } = await params;
   const orderCatalog = await loadOrderCatalogFromDb(prisma);
+  const providerCatalog = await loadProviderCatalogFromDb(prisma);
 
   const patient = await prisma.patient.findUnique({
     where: { id },
@@ -84,6 +94,9 @@ export default async function PatientPage({ params }: PatientPageProps) {
             orderBy: { createdAt: "desc" }
           },
           orders: {
+            orderBy: { createdAt: "desc" }
+          },
+          referrals: {
             orderBy: { createdAt: "desc" }
           }
         }
@@ -141,6 +154,16 @@ export default async function PatientPage({ params }: PatientPageProps) {
           status: order.status,
           rationale: order.rationale ?? "",
           createdAt: order.createdAt.toISOString()
+        })),
+      referrals: encounter.referrals.map((referral) => ({
+        id: referral.id,
+        referredDepartment: referral.referredDepartment,
+        referredProvider:
+          referral.referredFirstName.trim() && referral.referredLastName.trim()
+            ? `${referral.referredFirstName} ${referral.referredLastName}`
+            : "N/A (department only)",
+        reason: referral.reason ?? "",
+        createdAt: referral.createdAt.toISOString()
         }))
     })),
     scenarios: patient.scenarios.map((item) => ({
@@ -154,5 +177,5 @@ export default async function PatientPage({ params }: PatientPageProps) {
     }))
   };
 
-  return <PatientWorkspace initialPatient={initialPatient} orderCatalog={orderCatalog} />;
+  return <PatientWorkspace initialPatient={initialPatient} orderCatalog={orderCatalog} providerCatalog={providerCatalog} />;
 }
