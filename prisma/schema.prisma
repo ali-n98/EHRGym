@@ -154,6 +154,8 @@ model Problem {
 
   @@index([patientId])
   @@index([encounterId])
+}
+
 model Provider {
   id         String   @id
   firstName  String
