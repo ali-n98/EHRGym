@@ -29,6 +29,14 @@ type OrderItem = {
   createdAt: string;
 };
 
+type ReferralItem = {
+  id: string;
+  referredDepartment: string;
+  referredProvider: string;
+  reason: string;
+  createdAt: string;
+};
+
 type EncounterItem = {
   id: string;
   type: string;
@@ -48,6 +56,7 @@ type EncounterItem = {
   }>;
   notes: NoteItem[];
   orders: OrderItem[];
+  referrals: ReferralItem[];
 };
 
 type ScenarioItem = {
@@ -76,6 +85,7 @@ export type PatientWorkspaceData = {
 type WorkflowResponse =
   | { note: NoteItem }
   | { order: OrderItem }
+  | { referral: ReferralItem }
   | { encounter: { id: string; status: string } }
   | { ok: true };
 
@@ -89,6 +99,13 @@ type OrderCatalogEntry = {
 type PatientWorkspaceProps = {
   initialPatient: PatientWorkspaceData;
   orderCatalog: OrderCatalogEntry[];
+  providerCatalog: ProviderCatalogEntry[];
+};
+
+type ProviderCatalogEntry = {
+  firstName: string;
+  lastName: string;
+  department: string;
 };
 
 function uniqueInOrder(values: string[]): string[] {
@@ -121,10 +138,11 @@ function buildInitialOrderSelection(orderCatalog: OrderCatalogEntry[]) {
   return { category, higherGroup, lowerGroup, orderName };
 }
 
-export function PatientWorkspace({ initialPatient, orderCatalog }: PatientWorkspaceProps) {
+export function PatientWorkspace({ initialPatient, orderCatalog, providerCatalog }: PatientWorkspaceProps) {
   const [patient, setPatient] = useState(initialPatient);
   const [notePending, setNotePending] = useState(false);
   const [orderPending, setOrderPending] = useState(false);
+  const [referralPending, setReferralPending] = useState(false);
   const [signingOrderId, setSigningOrderId] = useState<string | null>(null);
   const [signingEncounter, setSigningEncounter] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -133,6 +151,13 @@ export function PatientWorkspace({ initialPatient, orderCatalog }: PatientWorksp
   const [selectedHigherGroup, setSelectedHigherGroup] = useState(initialOrderSelection.higherGroup);
   const [selectedLowerGroup, setSelectedLowerGroup] = useState(initialOrderSelection.lowerGroup);
   const [selectedOrderName, setSelectedOrderName] = useState(initialOrderSelection.orderName);
+  const departmentOptions = useMemo(() => uniqueInOrder(providerCatalog.map((entry) => entry.department)), [providerCatalog]);
+  const [selectedReferralDepartment, setSelectedReferralDepartment] = useState(departmentOptions[0] ?? "");
+  const providerOptions = useMemo(
+    () => providerCatalog.filter((entry) => entry.department === selectedReferralDepartment).map((entry) => `${entry.firstName} ${entry.lastName}`),
+    [providerCatalog, selectedReferralDepartment]
+  );
+  const [selectedReferralProvider, setSelectedReferralProvider] = useState<string>("N/A");
 
   const activeEncounter = patient.encounters[0];
   const scenario =
@@ -172,6 +197,7 @@ export function PatientWorkspace({ initialPatient, orderCatalog }: PatientWorksp
     { label: "Chart Review", href: "#chart-review" },
     { label: "Synopsis", href: "#summary" },
     { label: "Orders", href: "#orders" },
+    { label: "Referrals", href: "#referrals" },
     { label: "Notes", href: "#notes" },
     { label: "Plan", href: "#summary" },
     { label: "Wrap-Up", href: "#encounter" }
@@ -181,6 +207,7 @@ export function PatientWorkspace({ initialPatient, orderCatalog }: PatientWorksp
     { label: "Chart Review", href: "#chart-review", testId: "activity-chart-review" },
     { label: "Notes", href: "#notes", testId: "activity-notes" },
     { label: "Orders", href: "#orders", testId: "activity-orders" },
+    { label: "Referrals", href: "#referrals", testId: "activity-referrals" },
     { label: "Wrap-Up", href: "#encounter", testId: "activity-encounter" }
   ];
   const sidebarNavItems = [
@@ -188,6 +215,7 @@ export function PatientWorkspace({ initialPatient, orderCatalog }: PatientWorksp
     { label: "Labs & encounters", href: "#chart-review" },
     { label: "Documentation", href: "#notes" },
     { label: "Order Entry", href: "#orders" },
+    { label: "Referrals", href: "#referrals" },
     { label: "Sign / close", href: "#encounter" }
   ];
 
@@ -338,6 +366,45 @@ export function PatientWorkspace({ initialPatient, orderCatalog }: PatientWorksp
       setErrorMessage(error instanceof Error ? error.message : "Failed to sign order");
     } finally {
       setSigningOrderId(null);
+    }
+  }
+
+  async function handleCreateReferral(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setErrorMessage(null);
+    setReferralPending(true);
+
+    if (!selectedReferralDepartment || !selectedReferralProvider) {
+      setErrorMessage("Please choose a department and provider option.");
+      setReferralPending(false);
+      return;
+    }
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+
+    try {
+      const result = await postWorkflow({
+        type: "create_referral",
+        encounterId: activeEncounter.id,
+        department: selectedReferralDepartment,
+        provider: selectedReferralProvider,
+        reason: formData.get("reason")
+      });
+
+      if ("referral" in result) {
+        updateEncounter((encounter) => ({
+          ...encounter,
+          referrals: [result.referral, ...encounter.referrals]
+        }));
+      }
+
+      form.reset();
+      setSelectedReferralProvider("N/A");
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "Failed to place referral");
+    } finally {
+      setReferralPending(false);
     }
   }
 
@@ -657,6 +724,85 @@ export function PatientWorkspace({ initialPatient, orderCatalog }: PatientWorksp
                           </button>
                         </div>
                       ) : null}
+                    </article>
+                  ))}
+                </div>
+              </div>
+            </SectionCard>
+
+            <SectionCard title="Referrals" subtitle="Department and provider referrals" testId="referrals-panel" className="section-card--orders">
+              <div id="referrals" className="grid grid--2">
+                <form onSubmit={handleCreateReferral} className="list-row" data-testid="referral-form">
+                  <div className="form-grid">
+                    <label className="field">
+                      <span className="muted">Department</span>
+                      <select
+                        aria-label="Referral department"
+                        name="department"
+                        required
+                        value={selectedReferralDepartment}
+                        onChange={(event) => {
+                          setSelectedReferralDepartment(event.currentTarget.value);
+                          setSelectedReferralProvider("N/A");
+                        }}
+                      >
+                        {departmentOptions.map((department) => (
+                          <option key={department} value={department}>
+                            {department}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="field">
+                      <span className="muted">Provider</span>
+                      <select
+                        aria-label="Referral provider"
+                        name="provider"
+                        required
+                        value={selectedReferralProvider}
+                        onChange={(event) => setSelectedReferralProvider(event.currentTarget.value)}
+                      >
+                        <option value="N/A">N/A (department only)</option>
+                        {providerOptions.map((providerName) => (
+                          <option key={providerName} value={providerName}>
+                            {providerName}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="field">
+                      <span className="muted">Reason</span>
+                      <textarea aria-label="Referral reason" name="reason" placeholder="Reason for referral (optional)" />
+                    </label>
+                    <div className="form-actions">
+                      <button className="primary-button" type="submit" data-testid="save-referral-button" disabled={referralPending}>
+                        {referralPending ? "Submitting referral..." : "Place referral"}
+                      </button>
+                    </div>
+                  </div>
+                </form>
+
+                <div className="order-list">
+                  {activeEncounter.referrals.map((referral) => (
+                    <article key={referral.id} className="order-row" data-testid={`referral-row-${referral.id}`}>
+                      <header>
+                        <div>
+                          <h3>{referral.referredDepartment}</h3>
+                          <p className="muted">
+                            {referral.referredProvider} · {formatDateTime(new Date(referral.createdAt))}
+                          </p>
+                        </div>
+                        <span className="status-pill" data-status="SIGNED">
+                          SENT
+                        </span>
+                      </header>
+                      {referral.reason ? (
+                        <p>
+                          <strong>Reason:</strong> {referral.reason}
+                        </p>
+                      ) : (
+                        <p className="muted">No reason specified.</p>
+                      )}
                     </article>
                   ))}
                 </div>
