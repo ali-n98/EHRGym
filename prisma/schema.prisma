@@ -38,6 +38,8 @@ model Patient {
   updatedAt       DateTime    @updatedAt
   encounters      Encounter[]
   scenarios       Scenario[]
+  problemList     Problem[]
+  diagnoses       Diagnosis[]
 }
 
 model Encounter {
@@ -55,6 +57,8 @@ model Encounter {
   notes          ClinicalNote[]
   orders         Order[]
   scenarios      Scenario[]
+  newProblems    Problem[]
+  newDiagnoses   Diagnosis[]
 
   @@index([patientId, startedAt])
 }
@@ -120,4 +124,32 @@ model Scenario {
   encounter                Encounter @relation(fields: [encounterId], references: [id], onDelete: Cascade)
 
   @@index([patientId, encounterId])
+}
+
+model Diagnosis {
+  id          String     @id
+  code        String
+  category    String
+  name        String
+  patientId   String?
+  encounterId String?
+  patient     Patient?   @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  encounter   Encounter? @relation(fields: [encounterId], references: [id], onDelete: Cascade)
+  createdAt   DateTime   @default(now())
+
+  @@index([patientId])
+  @@index([encounterId])
+}
+
+model Problem {
+  id          String     @id
+  name        String
+  patientId   String?
+  encounterId String?
+  patient     Patient?   @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  encounter   Encounter? @relation(fields: [encounterId], references: [id], onDelete: Cascade)
+  createdAt   DateTime   @default(now())
+
+  @@index([patientId])
+  @@index([encounterId])
 }

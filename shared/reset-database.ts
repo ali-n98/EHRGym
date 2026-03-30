@@ -2,6 +2,8 @@ import type { PrismaClient } from "@prisma/client";
 
 import { seedPatients } from "./seed-data";
 import { seedOrderCatalogFromCsv } from "./order-catalog.js";
+import { seedProblemCatalogFromCsv } from "./problem-list-catalog.js";
+import { seedDiagnosisCatalogFromCsv } from "./diagnosis-catalog.js";
 
 export async function resetDatabase(prisma: PrismaClient) {
   await prisma.order.deleteMany();
@@ -83,8 +85,13 @@ export async function resetDatabase(prisma: PrismaClient) {
 
   const orderCatalogCount = await seedOrderCatalogFromCsv(prisma);
 
+  const problemCatalogCount = await seedProblemCatalogFromCsv(prisma);
+  const diagnosisCatalogCount = await seedDiagnosisCatalogFromCsv(prisma);
+
   return {
     patientCount: seedPatients.length,
-    orderCatalogCount
+    orderCatalogCount,
+    problemCatalogCount,
+    diagnosisCatalogCount
   };
 }
