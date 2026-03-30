@@ -96,7 +96,7 @@ export async function resetDatabase(prisma: PrismaClient) {
     patientCount: seedPatients.length,
     orderCatalogCount,
     problemCatalogCount,
-    diagnosisCatalogCount
+    diagnosisCatalogCount,
     providerCatalogCount
   };
 }
