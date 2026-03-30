@@ -9,6 +9,8 @@ async function main() {
   console.log(`Seeded ${result.patientCount} synthetic patients.`);
   console.log(`Seeded ${result.orderCatalogCount} order catalog rows from CSV.`);
   console.log(`Seeded ${result.providerCatalogCount} provider catalog rows from CSV.`);
+  console.log(`Seeded ${result.problemCatalogCount} problem catalog rows from CSV.`);
+  console.log(`Seeded ${result.diagnosisCatalogCount} diagnosis catalog rows from CSV.`);
 }
 
 main()
