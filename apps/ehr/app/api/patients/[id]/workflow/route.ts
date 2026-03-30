@@ -26,6 +26,13 @@ type WorkflowPayload =
       orderId: string;
     }
   | {
+      type: "create_referral";
+      encounterId: string;
+      department: string;
+      provider: string;
+      reason?: string;
+    }
+  | {
       type: "sign_encounter";
       encounterId: string;
     };
@@ -131,6 +138,44 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
         status: order.status,
         rationale: order.rationale ?? "",
         createdAt: order.createdAt.toISOString()
+      }
+    });
+  }
+
+  if (payload.type === "create_referral") {
+    const encounterId = getTrimmedString(payload.encounterId);
+    const department = getTrimmedString(payload.department);
+    const provider = getTrimmedString(payload.provider);
+    const reason = getTrimmedString(payload.reason);
+
+    if (!encounterId || !department || !provider) {
+      return NextResponse.json({ error: "Missing referral fields" }, { status: 400 });
+    }
+
+    const [referredFirstName, referredLastName] = provider === "N/A" ? ["", ""] : provider.split(/\s+/, 2);
+
+    const referral = await prisma.referral.create({
+      data: {
+        id: randomUUID(),
+        patientId,
+        encounterId,
+        referredDepartment: department,
+        referredFirstName: referredFirstName ?? "",
+        referredLastName: referredLastName ?? "",
+        reason
+      }
+    });
+
+    return NextResponse.json({
+      referral: {
+        id: referral.id,
+        referredDepartment: referral.referredDepartment,
+        referredProvider:
+          referral.referredFirstName.trim() && referral.referredLastName.trim()
+            ? `${referral.referredFirstName} ${referral.referredLastName}`
+            : "N/A (department only)",
+        reason: referral.reason ?? "",
+        createdAt: referral.createdAt.toISOString()
       }
     });
   }

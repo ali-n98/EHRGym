@@ -8,6 +8,7 @@ async function main() {
   const result = await resetDatabase(prisma);
   console.log(`Seeded ${result.patientCount} synthetic patients.`);
   console.log(`Seeded ${result.orderCatalogCount} order catalog rows from CSV.`);
+  console.log(`Seeded ${result.providerCatalogCount} provider catalog rows from CSV.`);
 }
 
 main()
