@@ -1,16 +1,81 @@
 order_name,cat1,cat2,cat3
 Basic metabolic panel,LAB,Chemistry,Renal
 Complete blood count,LAB,Hematology,Cell counts
+CBC,LAB,Hematology,Cell counts
+CBC with differential,LAB,Hematology,Cell counts
+CBC with reticulocyte count,LAB,Hematology,Reticulocyte
+Comprehensive metabolic panel,LAB,Chemistry,Metabolic
+Basic metabolic panel,LAB,Chemistry,Renal
 Troponin I,LAB,Cardiac,Biomarkers
+Troponin I serial,LAB,Cardiac,Biomarkers
 Lipase,LAB,GI,Pancreatic
 Lactate,LAB,Sepsis,Perfusion
+BNP,LAB,Cardiac,Biomarkers
+D-dimer,LAB,Coagulation,Screening
+ABG,LAB,Gas,Arterial
+Blood cultures x2,LAB,Microbiology,Blood culture
+Urinalysis,LAB,Urine,Qualitative
+Type and screen,LAB,Transfusion,Compatibility
+Serum osmolality,LAB,Metabolic,Osmolality
+Urine electrolytes,LAB,Metabolic,Electrolytes
+Thyroid function panel,LAB,Endocrine,Thyroid
+TSH,LAB,Endocrine,Thyroid
+C. diff toxin PCR,LAB,Microbiology,Stool
+Stool studies,LAB,Microbiology,Stool
+Ethanol level,LAB,Toxicology,Alcohol
+Hepatic function panel,LAB,Metabolic,Liver
+Ammonia level,LAB,Metabolic,Ammonia
+Tryptase level,LAB,Allergy,Marker
+Lumbar puncture,LAB,Procedure,CSF
+Wound culture,LAB,Microbiology,Wound
+
 Chest X-ray,IMAGING,Radiology,Thoracic
 CT chest with contrast,IMAGING,Radiology,Cross-sectional
+CT angiography chest,IMAGING,Radiology,CTA
+CT head without contrast,IMAGING,Radiology,Neuro
+CT angiography head and neck,IMAGING,Radiology,CTA
 CT abdomen pelvis with contrast,IMAGING,Radiology,Cross-sectional
+CT abdomen with contrast,IMAGING,Radiology,Cross-sectional
+CT abdomen pelvis,IMAGING,Radiology,Cross-sectional
+KUB X-ray,IMAGING,Radiology,Abdominal
+X-ray left hip,IMAGING,Radiology,Musculoskeletal
+Echocardiogram,IMAGING,Cardiac,Echo
+ECG 12-lead,LAB,Cardiac,ECG
+
 Normal saline bolus,MED,Fluids,Crystalloid
 Lactated Ringer bolus,MED,Fluids,Crystalloid
 Ceftriaxone IV,MED,Antibiotics,Beta-lactam
 Azithromycin PO,MED,Antibiotics,Macrolide
 Heparin infusion,MED,Anticoagulation,Continuous
+Heparin drip,MED,Anticoagulation,Continuous
+Insulin drip,MED,Endocrine,Insulin
+Insulin and dextrose IV,MED,Endocrine,Insulin+Dextrose
+Packed red blood cells,MED,Transfusion,Blood product
+Pantoprazole IV,MED,Gastroenterology,Acid suppression
+Methylprednisolone IV,MED,Anti-inflammatory,Steroid
+Albuterol nebulizer,MED,Bronchodilator,Nebulizer
+Furosemide IV,MED,Diuretic,Loop
+Diltiazem IV,MED,Antiarrhythmic,Rate control
+Potassium chloride IV,MED,Electrolyte,Replacement
+Sodium chloride 3% IV,MED,Electrolyte,Hypertonic
+Alteplase IV,MED,Thrombolytic,Stroke
+Vancomycin IV,MED,Antibiotics,Glycopeptide
+Vancomycin oral,MED,Antibiotics,Glycopeptide
+Calcium gluconate IV,MED,Electrolyte,Stabilization
+Lactulose oral,MED,Gastroenterology,Ammonia reduction
+Rifaximin oral,MED,Antibiotics,Rifaximin
+Epinephrine IV drip,MED,Vasopressor,Emergency
+Vitamin K IV,MED,Reversal,Anticoagulation
+Magnesium sulfate IV,MED,Electrolyte,Replacement
+Lorazepam IV,MED,Sedative,Benzodiazepine
+Thiamine IV,MED,Supplement,Vitamins
+Propylthiouracil oral,MED,Endocrine,Antithyroid
+Propranolol IV,MED,Beta blocker,Rate control
+Hydromorphone PCA,MED,Analgesic,Opioid
+Dexamethasone IV,MED,Steroid,Anti-inflammatory
+
+Nasogastric tube placement,PROCEDURE,Gastrointestinal,Decompression
+Orthopedic surgery consult,CONSULT,Surgery,Orthopedics
 Telemetry monitoring,MONITORING,Cardiac,Observation
+Telemetry,MONITORING,Cardiac,Observation
 Droplet precautions,NURSING,Isolation,Precautions

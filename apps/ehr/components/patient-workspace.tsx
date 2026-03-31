@@ -76,7 +76,7 @@ export type PatientWorkspaceData = {
   age: number;
   sex: string;
   allergies: string[];
-  bannerFlags: string[];
+  problemList: string[];
   summary: string;
   encounters: EncounterItem[];
   scenarios: ScenarioItem[];
@@ -166,9 +166,9 @@ export function PatientWorkspace({ initialPatient, orderCatalog, providerCatalog
   const requiredOrders = scenario?.requiredOrders ?? [];
   const requiredNoteElements = scenario?.requiredNoteElements ?? [];
   const rubric = scenario?.rubric ?? [];
-  const problemList = useMemo(() => Array.from(new Set([activeEncounter?.reasonForVisit, ...patient.bannerFlags].filter(Boolean))), [
+  const problemList = useMemo(() => Array.from(new Set([activeEncounter?.reasonForVisit, ...patient.problemList].filter(Boolean))), [
     activeEncounter?.reasonForVisit,
-    patient.bannerFlags
+    patient.problemList
   ]);
   const visitDiagnoses = useMemo(
     () => Array.from(new Set([scenario?.title ?? activeEncounter?.reasonForVisit, activeEncounter?.type, patient.summary].filter(Boolean))),
@@ -494,8 +494,8 @@ export function PatientWorkspace({ initialPatient, orderCatalog, providerCatalog
               <span>{patient.allergies.join(", ")}</span>
             </div>
             <div className="patient-hero__panel" data-testid="flags-card">
-              <strong>Chart flags</strong>
-              <span>{patient.bannerFlags.join(" · ")}</span>
+              <strong>Problem list</strong>
+              <span>{patient.problemList.join(" · ")}</span>
             </div>
             <div className="patient-hero__panel" data-testid="encounter-card">
               <strong>Visit focus</strong>

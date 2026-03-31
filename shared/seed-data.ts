@@ -57,7 +57,7 @@ export type SeedPatient = {
   age: number;
   sex: string;
   allergies: string[];
-  bannerFlags: string[];
+  problemList: string[];
   summary: string;
   encounters: SeedEncounter[];
   scenarios: SeedScenario[];
@@ -77,7 +77,7 @@ export const seedPatients: SeedPatient[] = [
     age: 68,
     sex: "F",
     allergies: ["Penicillin"],
-    bannerFlags: ["Fall risk", "CKD stage 3"],
+    problemList: ["Fall risk", "CKD stage 3"],
     summary: "Admitted with weakness and oliguria after several days of poor oral intake.",
     encounters: [
       {
@@ -131,7 +131,7 @@ export const seedPatients: SeedPatient[] = [
     age: 52,
     sex: "M",
     allergies: ["None known"],
-    bannerFlags: ["Droplet precautions"],
+    problemList: ["Droplet precautions"],
     summary: "Seen for fever, productive cough, and exertional dyspnea.",
     encounters: [
       {
@@ -178,7 +178,7 @@ export const seedPatients: SeedPatient[] = [
     age: 28,
     sex: "F",
     allergies: ["Sulfa drugs"],
-    bannerFlags: ["Type 1 DM", "Insulin pump"],
+    problemList: ["Type 1 DM", "Insulin pump"],
     summary: "Presented with nausea, vomiting, abdominal pain, and Kussmaul breathing. Blood glucose 456 with anion-gap acidosis.",
     encounters: [
       {
@@ -238,7 +238,7 @@ export const seedPatients: SeedPatient[] = [
     age: 71,
     sex: "M",
     allergies: ["None known"],
-    bannerFlags: ["HTN", "Hyperlipidemia", "Prior PCI 2019"],
+    problemList: ["HTN", "Hyperlipidemia", "Prior PCI 2019"],
     summary: "Admitted with crushing substernal chest pain radiating to left arm. ECG showed ST elevations in II, III, aVF.",
     encounters: [
       {
@@ -298,7 +298,7 @@ export const seedPatients: SeedPatient[] = [
     age: 59,
     sex: "F",
     allergies: ["NSAIDs"],
-    bannerFlags: ["Cirrhosis", "EtOH use disorder"],
+    problemList: ["Cirrhosis", "EtOH use disorder"],
     summary: "Presented with hematemesis and melena. Tachycardic and hypotensive on arrival. History of liver cirrhosis.",
     encounters: [
       {
@@ -356,7 +356,7 @@ export const seedPatients: SeedPatient[] = [
     age: 74,
     sex: "M",
     allergies: ["Aspirin"],
-    bannerFlags: ["COPD GOLD III", "Home O2 2L"],
+    problemList: ["COPD GOLD III", "Home O2 2L"],
     summary: "Brought in with worsening dyspnea, increased sputum production, and wheezing over 3 days. SpO2 84% on room air.",
     encounters: [
       {
@@ -413,7 +413,7 @@ export const seedPatients: SeedPatient[] = [
     age: 76,
     sex: "F",
     allergies: ["Lisinopril (angioedema)"],
-    bannerFlags: ["HFrEF EF 25%", "ICD in place"],
+    problemList: ["HFrEF EF 25%", "ICD in place"],
     summary: "Admitted with progressive dyspnea on exertion, orthopnea, and bilateral lower extremity edema over 2 weeks.",
     encounters: [
       {
@@ -470,7 +470,7 @@ export const seedPatients: SeedPatient[] = [
     age: 45,
     sex: "M",
     allergies: ["None known"],
-    bannerFlags: ["Recent knee surgery", "BMI 34"],
+    problemList: ["Recent knee surgery", "BMI 34"],
     summary: "Presents with acute-onset pleuritic chest pain and dyspnea. Recently had right knee arthroscopy two weeks ago.",
     encounters: [
       {
@@ -526,7 +526,7 @@ export const seedPatients: SeedPatient[] = [
     age: 82,
     sex: "F",
     allergies: ["Fluoroquinolones"],
-    bannerFlags: ["Dementia", "Chronic Foley catheter"],
+    problemList: ["Dementia", "Chronic Foley catheter"],
     summary: "Found altered and febrile at nursing home. BP 82/48, HR 112, temp 39.4 C. Foley draining cloudy urine.",
     encounters: [
       {
@@ -586,7 +586,7 @@ export const seedPatients: SeedPatient[] = [
     age: 48,
     sex: "M",
     allergies: ["None known"],
-    bannerFlags: ["EtOH use", "Obesity BMI 36"],
+    problemList: ["EtOH use", "Obesity BMI 36"],
     summary: "Presents with severe epigastric pain radiating to back after a heavy alcohol binge. Associated nausea and vomiting.",
     encounters: [
       {
@@ -645,7 +645,7 @@ export const seedPatients: SeedPatient[] = [
     age: 66,
     sex: "F",
     allergies: ["Amiodarone"],
-    bannerFlags: ["Hypothyroidism", "Valvular disease"],
+    problemList: ["Hypothyroidism", "Valvular disease"],
     summary: "Found in rapid atrial fibrillation (HR 142) during post-operative monitoring after hip replacement surgery.",
     encounters: [
       {
@@ -703,7 +703,7 @@ export const seedPatients: SeedPatient[] = [
     age: 58,
     sex: "M",
     allergies: ["None known"],
-    bannerFlags: ["SIADH", "Small cell lung cancer"],
+    problemList: ["SIADH", "Small cell lung cancer"],
     summary: "Found lethargic with sodium 118 on routine labs. Known small cell lung cancer. Currently on SSRI.",
     encounters: [
       {
@@ -762,7 +762,7 @@ export const seedPatients: SeedPatient[] = [
     age: 72,
     sex: "F",
     allergies: ["Contrast dye"],
-    bannerFlags: ["Atrial fibrillation", "Not on anticoagulation"],
+    problemList: ["Atrial fibrillation", "Not on anticoagulation"],
     summary: "Brought by EMS with sudden-onset right-sided weakness and aphasia. Last known well 90 minutes ago. NIHSS 14.",
     encounters: [
       {
@@ -821,7 +821,7 @@ export const seedPatients: SeedPatient[] = [
     age: 55,
     sex: "M",
     allergies: ["Penicillin"],
-    bannerFlags: ["IVDU", "Hepatitis C", "Prior MRSA"],
+    problemList: ["IVDU", "Hepatitis C", "Prior MRSA"],
     summary: "Presents with expanding erythema, warmth, and purulent drainage from left lower extremity. Fever to 38.9 C.",
     encounters: [
       {
@@ -872,7 +872,7 @@ export const seedPatients: SeedPatient[] = [
     age: 70,
     sex: "F",
     allergies: ["None known"],
-    bannerFlags: ["ESRD on HD", "Missed dialysis x2"],
+    problemList: ["ESRD on HD", "Missed dialysis x2"],
     summary: "Presents with generalized weakness and palpitations. Missed last two hemodialysis sessions. ECG shows peaked T waves.",
     encounters: [
       {
@@ -929,7 +929,7 @@ export const seedPatients: SeedPatient[] = [
     age: 62,
     sex: "M",
     allergies: ["Omeprazole"],
-    bannerFlags: ["Cirrhosis MELD 24", "Ascites"],
+    problemList: ["Cirrhosis MELD 24", "Ascites"],
     summary: "Found confused and disoriented by family. Known cirrhosis with prior variceal bleed. Asterixis noted on exam.",
     encounters: [
       {
@@ -987,7 +987,7 @@ export const seedPatients: SeedPatient[] = [
     age: 34,
     sex: "F",
     allergies: ["Bee stings", "Ceftriaxone (new)"],
-    bannerFlags: ["Asthma", "EpiPen prescribed"],
+    problemList: ["Asthma", "EpiPen prescribed"],
     summary: "Developed diffuse urticaria, angioedema, and wheezing within minutes of IV ceftriaxone. BP dropped to 78/42.",
     encounters: [
       {
@@ -1043,7 +1043,7 @@ export const seedPatients: SeedPatient[] = [
     age: 84,
     sex: "F",
     allergies: ["Codeine"],
-    bannerFlags: ["Osteoporosis", "Warfarin for AFib"],
+    problemList: ["Osteoporosis", "Warfarin for AFib"],
     summary: "Fell at home and unable to bear weight. X-ray confirms left intertrochanteric hip fracture. On warfarin.",
     encounters: [
       {
@@ -1094,7 +1094,7 @@ export const seedPatients: SeedPatient[] = [
     age: 22,
     sex: "F",
     allergies: ["None known"],
-    bannerFlags: ["Severe persistent asthma", "Prior intubation 2024"],
+    problemList: ["Severe persistent asthma", "Prior intubation 2024"],
     summary: "Presents with severe dyspnea, inability to speak full sentences, and accessory muscle use. Peak flow 35% of predicted.",
     encounters: [
       {
@@ -1152,7 +1152,7 @@ export const seedPatients: SeedPatient[] = [
     age: 46,
     sex: "M",
     allergies: ["None known"],
-    bannerFlags: ["Alcohol use disorder", "Seizure history"],
+    problemList: ["Alcohol use disorder", "Seizure history"],
     summary: "Admitted for elective procedure. Last drink 18 hours ago. Developing tremor, diaphoresis, and agitation. CIWA score 24.",
     encounters: [
       {
@@ -1211,7 +1211,7 @@ export const seedPatients: SeedPatient[] = [
     age: 73,
     sex: "F",
     allergies: ["Clindamycin"],
-    bannerFlags: ["Recent hospitalization", "Prior C. diff infection"],
+    problemList: ["Recent hospitalization", "Prior C. diff infection"],
     summary: "Readmitted with profuse watery diarrhea (8 episodes/day), abdominal cramping, and low-grade fever after recent cephalosporin course.",
     encounters: [
       {
@@ -1263,7 +1263,7 @@ export const seedPatients: SeedPatient[] = [
     age: 38,
     sex: "F",
     allergies: ["Iodine (rash)"],
-    bannerFlags: ["Graves disease", "Medication non-adherent"],
+    problemList: ["Graves disease", "Medication non-adherent"],
     summary: "Presents with fever 39.8 C, HR 156, agitation, and tremor. Non-adherent to propylthiouracil for 3 weeks.",
     encounters: [
       {
@@ -1322,7 +1322,7 @@ export const seedPatients: SeedPatient[] = [
     age: 24,
     sex: "M",
     allergies: ["Morphine (itching)"],
-    bannerFlags: ["HbSS disease", "Chronic pain", "Cholecystectomy 2024"],
+    problemList: ["HbSS disease", "Chronic pain", "Cholecystectomy 2024"],
     summary: "Presents with severe bilateral lower extremity and low back pain. Temperature 38.4 C, SpO2 91% on room air.",
     encounters: [
       {
@@ -1380,7 +1380,7 @@ export const seedPatients: SeedPatient[] = [
     age: 19,
     sex: "F",
     allergies: ["None known"],
-    bannerFlags: ["College student", "Meningococcal vaccine pending"],
+    problemList: ["College student", "Meningococcal vaccine pending"],
     summary: "Presents with severe headache, neck stiffness, photophobia, fever 39.6 C, and a petechial rash on trunk.",
     encounters: [
       {
@@ -1440,7 +1440,7 @@ export const seedPatients: SeedPatient[] = [
     age: 67,
     sex: "M",
     allergies: ["Latex"],
-    bannerFlags: ["POD 3 colectomy", "Type 2 DM"],
+    problemList: ["POD 3 colectomy", "Type 2 DM"],
     summary: "Post-operative day 3 after right hemicolectomy for colon cancer. Developing abdominal distension, nausea, absent bowel sounds, no flatus.",
     encounters: [
       {

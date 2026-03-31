@@ -10,7 +10,9 @@ type ApiPatient = {
   age: number;
   sex: string;
   allergiesJson: string;
-  bannerFlagsJson: string;
+  problemList: Array<{
+    name: string;
+  }>;
   summary: string;
   encounters: Array<{
     id: string;
@@ -75,6 +77,9 @@ export async function GET(_: Request, context: { params: Promise<{ id: string }>
   const patient = await prisma.patient.findUnique({
     where: { id },
     include: {
+      problemList: {
+        select: { name: true }
+      },
       encounters: {
         orderBy: { startedAt: "desc" },
         include: {
@@ -102,7 +107,7 @@ export async function GET(_: Request, context: { params: Promise<{ id: string }>
       age: patient.age,
       sex: patient.sex,
       allergies: parseJsonValue<string[]>(patient.allergiesJson),
-      bannerFlags: parseJsonValue<string[]>(patient.bannerFlagsJson),
+      problemList: patient.problemList.map((problem) => problem.name),
       summary: patient.summary,
       encounters: patient.encounters.map((encounter: ApiPatient["encounters"][number]) => ({
         ...encounter,
