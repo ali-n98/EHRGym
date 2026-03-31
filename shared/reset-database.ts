@@ -73,6 +73,12 @@ export async function resetDatabase(prisma: PrismaClient) {
                 rationale: order.rationale,
                 createdAt: new Date(order.createdAt)
               }))
+            },
+            newProblems: {
+              create: encounter.newProblems.map((problem, index) => ({
+                id: `${encounter.id}-newproblem-${index + 1}`,
+                name: problem
+              }))
             }
           }))
         },
