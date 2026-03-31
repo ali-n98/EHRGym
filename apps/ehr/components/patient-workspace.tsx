@@ -209,14 +209,11 @@ export function PatientWorkspace({ initialPatient, orderCatalog, providerCatalog
   const requiredOrders = scenario?.requiredOrders ?? [];
   const requiredNoteElements = scenario?.requiredNoteElements ?? [];
   const rubric = scenario?.rubric ?? [];
-  const problemList = useMemo(() => uniqueInOrder([...patient.problemList, activeEncounter?.reasonForVisit].filter(Boolean)), [activeEncounter?.reasonForVisit, patient.problemList]);
-  const diagnosisList = useMemo(() => {
-    if (patient.diagnoses.length > 0) {
-      return uniqueInOrder(patient.diagnoses.map((diagnosis) => `${diagnosis.code} - ${diagnosis.name}`));
-    }
-
-    return uniqueInOrder([scenario?.title ?? activeEncounter?.reasonForVisit, activeEncounter?.type, patient.summary].filter(Boolean));
-  }, [activeEncounter?.reasonForVisit, activeEncounter?.type, patient.diagnoses, patient.summary, scenario?.title]);
+  const problemList = useMemo(() => uniqueInOrder(patient.problemList || []), [patient.problemList]);
+  const diagnosisList = useMemo(
+    () => uniqueInOrder(patient.diagnoses.map((diagnosis) => `${diagnosis.code} - ${diagnosis.name}`)),
+    [patient.diagnoses]
+  );
   const filteredProblemCatalog = useMemo(() => {
     const query = normalizeCatalogValue(problemSearch);
     const matches = query
