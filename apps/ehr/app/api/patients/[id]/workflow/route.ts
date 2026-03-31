@@ -33,6 +33,18 @@ type WorkflowPayload =
       reason?: string;
     }
   | {
+      type: "create_problem";
+      encounterId: string;
+      name: string;
+    }
+  | {
+      type: "create_diagnosis";
+      encounterId: string;
+      code: string;
+      category: string;
+      name: string;
+    }
+  | {
       type: "sign_encounter";
       encounterId: string;
     };
@@ -176,6 +188,83 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
             : "N/A (department only)",
         reason: referral.reason ?? "",
         createdAt: referral.createdAt.toISOString()
+      }
+    });
+  }
+
+  if (payload.type === "create_problem") {
+    const encounterId = getTrimmedString(payload.encounterId);
+    const name = getTrimmedString(payload.name);
+
+    if (!encounterId || !name) {
+      return NextResponse.json({ error: "Missing problem fields" }, { status: 400 });
+    }
+
+    const existingProblem = await prisma.problem.findFirst({
+      where: {
+        patientId,
+        name
+      }
+    });
+
+    const problem =
+      existingProblem ??
+      (await prisma.problem.create({
+        data: {
+          id: randomUUID(),
+          patientId,
+          encounterId,
+          name
+        }
+      }));
+
+    return NextResponse.json({
+      problem: {
+        id: problem.id,
+        name: problem.name,
+        createdAt: problem.createdAt.toISOString()
+      }
+    });
+  }
+
+  if (payload.type === "create_diagnosis") {
+    const encounterId = getTrimmedString(payload.encounterId);
+    const code = getTrimmedString(payload.code);
+    const category = getTrimmedString(payload.category);
+    const name = getTrimmedString(payload.name);
+
+    if (!encounterId || !code || !category || !name) {
+      return NextResponse.json({ error: "Missing diagnosis fields" }, { status: 400 });
+    }
+
+    const existingDiagnosis = await prisma.diagnosis.findFirst({
+      where: {
+        patientId,
+        code,
+        name
+      }
+    });
+
+    const diagnosis =
+      existingDiagnosis ??
+      (await prisma.diagnosis.create({
+        data: {
+          id: randomUUID(),
+          patientId,
+          encounterId,
+          code,
+          category,
+          name
+        }
+      }));
+
+    return NextResponse.json({
+      diagnosis: {
+        id: diagnosis.id,
+        code: diagnosis.code,
+        category: diagnosis.category,
+        name: diagnosis.name,
+        createdAt: diagnosis.createdAt.toISOString()
       }
     });
   }

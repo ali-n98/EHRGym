@@ -37,6 +37,20 @@ type ReferralItem = {
   createdAt: string;
 };
 
+type ProblemItem = {
+  id: string;
+  name: string;
+  createdAt: string;
+};
+
+type DiagnosisItem = {
+  id: string;
+  code: string;
+  category: string;
+  name: string;
+  createdAt: string;
+};
+
 type EncounterItem = {
   id: string;
   type: string;
@@ -77,6 +91,7 @@ export type PatientWorkspaceData = {
   sex: string;
   allergies: string[];
   problemList: string[];
+  diagnoses: DiagnosisItem[];
   summary: string;
   encounters: EncounterItem[];
   scenarios: ScenarioItem[];
@@ -86,6 +101,8 @@ type WorkflowResponse =
   | { note: NoteItem }
   | { order: OrderItem }
   | { referral: ReferralItem }
+  | { problem: ProblemItem }
+  | { diagnosis: DiagnosisItem }
   | { encounter: { id: string; status: string } }
   | { ok: true };
 
@@ -100,12 +117,24 @@ type PatientWorkspaceProps = {
   initialPatient: PatientWorkspaceData;
   orderCatalog: OrderCatalogEntry[];
   providerCatalog: ProviderCatalogEntry[];
+  problemCatalog: ProblemCatalogEntry[];
+  diagnosisCatalog: DiagnosisCatalogEntry[];
 };
 
 type ProviderCatalogEntry = {
   firstName: string;
   lastName: string;
   department: string;
+};
+
+type ProblemCatalogEntry = {
+  name: string;
+};
+
+type DiagnosisCatalogEntry = {
+  code: string;
+  category: string;
+  name: string;
 };
 
 function uniqueInOrder(values: string[]): string[] {
@@ -138,14 +167,28 @@ function buildInitialOrderSelection(orderCatalog: OrderCatalogEntry[]) {
   return { category, higherGroup, lowerGroup, orderName };
 }
 
-export function PatientWorkspace({ initialPatient, orderCatalog, providerCatalog }: PatientWorkspaceProps) {
+function normalizeCatalogValue(value: string) {
+  return value.trim().toLowerCase();
+}
+
+function formatDiagnosisCatalogValue(entry: DiagnosisCatalogEntry) {
+  return `${entry.code} - ${entry.name}`;
+}
+
+export function PatientWorkspace({ initialPatient, orderCatalog, providerCatalog, problemCatalog, diagnosisCatalog }: PatientWorkspaceProps) {
   const [patient, setPatient] = useState(initialPatient);
   const [notePending, setNotePending] = useState(false);
   const [orderPending, setOrderPending] = useState(false);
   const [referralPending, setReferralPending] = useState(false);
+  const [problemPending, setProblemPending] = useState(false);
+  const [diagnosisPending, setDiagnosisPending] = useState(false);
   const [signingOrderId, setSigningOrderId] = useState<string | null>(null);
   const [signingEncounter, setSigningEncounter] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [problemSearch, setProblemSearch] = useState("");
+  const [diagnosisSearch, setDiagnosisSearch] = useState("");
+  const [newVisitProblems, setNewVisitProblems] = useState<string[]>([]);
+  const [newVisitDiagnoses, setNewVisitDiagnoses] = useState<string[]>([]);
   const initialOrderSelection = useMemo(() => buildInitialOrderSelection(orderCatalog), [orderCatalog]);
   const [selectedCategory, setSelectedCategory] = useState(initialOrderSelection.category);
   const [selectedHigherGroup, setSelectedHigherGroup] = useState(initialOrderSelection.higherGroup);
@@ -166,13 +209,44 @@ export function PatientWorkspace({ initialPatient, orderCatalog, providerCatalog
   const requiredOrders = scenario?.requiredOrders ?? [];
   const requiredNoteElements = scenario?.requiredNoteElements ?? [];
   const rubric = scenario?.rubric ?? [];
-  const problemList = useMemo(() => Array.from(new Set([activeEncounter?.reasonForVisit, ...patient.problemList].filter(Boolean))), [
-    activeEncounter?.reasonForVisit,
-    patient.problemList
-  ]);
-  const visitDiagnoses = useMemo(
-    () => Array.from(new Set([scenario?.title ?? activeEncounter?.reasonForVisit, activeEncounter?.type, patient.summary].filter(Boolean))),
-    [activeEncounter?.reasonForVisit, activeEncounter?.type, patient.summary, scenario?.title]
+  const problemList = useMemo(() => uniqueInOrder([...patient.problemList, activeEncounter?.reasonForVisit].filter(Boolean)), [activeEncounter?.reasonForVisit, patient.problemList]);
+  const diagnosisList = useMemo(() => {
+    if (patient.diagnoses.length > 0) {
+      return uniqueInOrder(patient.diagnoses.map((diagnosis) => `${diagnosis.code} - ${diagnosis.name}`));
+    }
+
+    return uniqueInOrder([scenario?.title ?? activeEncounter?.reasonForVisit, activeEncounter?.type, patient.summary].filter(Boolean));
+  }, [activeEncounter?.reasonForVisit, activeEncounter?.type, patient.diagnoses, patient.summary, scenario?.title]);
+  const filteredProblemCatalog = useMemo(() => {
+    const query = normalizeCatalogValue(problemSearch);
+    const matches = query
+      ? problemCatalog.filter((entry) => normalizeCatalogValue(entry.name).includes(query))
+      : problemCatalog;
+
+    return matches.slice(0, 20);
+  }, [problemCatalog, problemSearch]);
+  const filteredDiagnosisCatalog = useMemo(() => {
+    const query = normalizeCatalogValue(diagnosisSearch);
+    const matches = query
+      ? diagnosisCatalog.filter((entry) => {
+          const searchableText = normalizeCatalogValue(
+            `${entry.code} ${entry.name} ${entry.category} ${formatDiagnosisCatalogValue(entry)}`
+          );
+          return searchableText.includes(query);
+        })
+      : diagnosisCatalog;
+
+    return [...matches]
+      .sort((a, b) => a.code.localeCompare(b.code, undefined, { numeric: true, sensitivity: "base" }))
+      .slice(0, 20);
+  }, [diagnosisCatalog, diagnosisSearch]);
+  const normalizedNewVisitProblems = useMemo(
+    () => new Set(newVisitProblems.map((problem) => normalizeCatalogValue(problem))),
+    [newVisitProblems]
+  );
+  const normalizedNewVisitDiagnoses = useMemo(
+    () => new Set(newVisitDiagnoses.map((diagnosis) => normalizeCatalogValue(diagnosis))),
+    [newVisitDiagnoses]
   );
   const getHigherGroupOptions = (category: string) =>
     uniqueInOrder(orderCatalog.filter((entry) => entry.cat1 === category).map((entry) => entry.cat2));
@@ -408,6 +482,100 @@ export function PatientWorkspace({ initialPatient, orderCatalog, providerCatalog
     }
   }
 
+  async function handleAddProblem(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setErrorMessage(null);
+
+    const matchedProblem = problemCatalog.find((entry) => normalizeCatalogValue(entry.name) === normalizeCatalogValue(problemSearch));
+
+    if (!matchedProblem) {
+      setErrorMessage("Choose a problem from the catalog before adding it to the chart.");
+      return;
+    }
+
+    setProblemPending(true);
+
+    try {
+      const result = await postWorkflow({
+        type: "create_problem",
+        encounterId: activeEncounter.id,
+        name: matchedProblem.name
+      });
+
+      if ("problem" in result) {
+        const alreadyPresent = patient.problemList.includes(result.problem.name);
+        setPatient((current) => ({
+          ...current,
+          problemList: current.problemList.includes(result.problem.name) ? current.problemList : [result.problem.name, ...current.problemList]
+        }));
+
+        if (!alreadyPresent) {
+          setNewVisitProblems((current) => (current.includes(result.problem.name) ? current : [result.problem.name, ...current]));
+        }
+      }
+
+      setProblemSearch("");
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "Failed to add problem");
+    } finally {
+      setProblemPending(false);
+    }
+  }
+
+  async function handleAddDiagnosis(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setErrorMessage(null);
+
+    const normalizedQuery = normalizeCatalogValue(diagnosisSearch);
+    const matchedDiagnosis = diagnosisCatalog.find((entry) => {
+      return (
+        normalizeCatalogValue(formatDiagnosisCatalogValue(entry)) === normalizedQuery ||
+        normalizeCatalogValue(entry.code) === normalizedQuery ||
+        normalizeCatalogValue(entry.name) === normalizedQuery
+      );
+    });
+
+    if (!matchedDiagnosis) {
+      setErrorMessage("Choose a diagnosis from the catalog before adding it to the chart.");
+      return;
+    }
+
+    setDiagnosisPending(true);
+
+    try {
+      const result = await postWorkflow({
+        type: "create_diagnosis",
+        encounterId: activeEncounter.id,
+        code: matchedDiagnosis.code,
+        category: matchedDiagnosis.category,
+        name: matchedDiagnosis.name
+      });
+
+      if ("diagnosis" in result) {
+        const diagnosisLabel = `${result.diagnosis.code} - ${result.diagnosis.name}`;
+        const alreadyPresent = patient.diagnoses.some(
+          (diagnosis) => diagnosis.code === result.diagnosis.code && diagnosis.name === result.diagnosis.name
+        );
+        setPatient((current) => ({
+          ...current,
+          diagnoses: current.diagnoses.some((diagnosis) => diagnosis.code === result.diagnosis.code && diagnosis.name === result.diagnosis.name)
+            ? current.diagnoses
+            : [...current.diagnoses, result.diagnosis]
+        }));
+
+        if (!alreadyPresent) {
+          setNewVisitDiagnoses((current) => (current.includes(diagnosisLabel) ? current : [diagnosisLabel, ...current]));
+        }
+      }
+
+      setDiagnosisSearch("");
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "Failed to add diagnosis");
+    } finally {
+      setDiagnosisPending(false);
+    }
+  }
+
   async function handleSignEncounter() {
     setErrorMessage(null);
     setSigningEncounter(true);
@@ -527,52 +695,114 @@ export function PatientWorkspace({ initialPatient, orderCatalog, providerCatalog
             </SectionCard>
 
             <SectionCard title="Notes" subtitle="Progress and clinical documentation" testId="notes-panel" className="section-card--notes">
-              <div id="notes" className="grid grid--2">
-                <form onSubmit={handleCreateNote} className="list-row" data-testid="note-form">
+              <div id="notes">
+                <div className="grid grid--2">
+                  <form onSubmit={handleCreateNote} className="list-row" data-testid="note-form">
+                    <div className="form-grid">
+                      <label className="field">
+                        <span className="muted">Author</span>
+                        <input aria-label="Note author" name="author" defaultValue="Attending Physician" required />
+                      </label>
+                      <label className="field">
+                        <span className="muted">Title</span>
+                        <input aria-label="Note title" name="title" defaultValue="Progress Note" required />
+                      </label>
+                      <label className="field">
+                        <span className="muted">Progress note</span>
+                        <textarea
+                          aria-label="Progress note content"
+                          name="content"
+                          defaultValue={`S:\nO:\nA:\nP:`}
+                          required
+                        />
+                      </label>
+                      <div className="form-actions">
+                        <button className="primary-button" type="submit" data-testid="save-note-button" disabled={notePending}>
+                          {notePending ? "Saving note..." : "File progress note"}
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+
+                  <div className="note-list">
+                    {activeEncounter.notes.map((note) => (
+                      <article key={note.id} className="note-row" data-testid={`note-row-${note.id}`}>
+                        <header>
+                          <div>
+                            <h3>{note.title}</h3>
+                            <p className="muted">
+                              {note.type} · {note.author} · {formatDateTime(new Date(note.createdAt))}
+                            </p>
+                          </div>
+                          <span className="status-pill" data-status={note.signed ? "SIGNED" : "OPEN"}>
+                            {note.signed ? "SIGNED" : "DRAFT"}
+                          </span>
+                        </header>
+                        <p style={{ whiteSpace: "pre-wrap" }}>{note.content}</p>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </SectionCard>
+
+            <SectionCard title="Problems and Diagnoses" subtitle="Search and add patient issues from catalogs" testId="problems-diagnoses-panel" className="section-card--problems-diagnoses">
+              <div id="problems-diagnoses" className="content-stack">
+                <form onSubmit={handleAddProblem} className="list-row list-row--compact" data-testid="problem-form">
                   <div className="form-grid">
                     <label className="field">
-                      <span className="muted">Author</span>
-                      <input aria-label="Note author" name="author" defaultValue="Attending Physician" required />
-                    </label>
-                    <label className="field">
-                      <span className="muted">Title</span>
-                      <input aria-label="Note title" name="title" defaultValue="Progress Note" required />
-                    </label>
-                    <label className="field">
-                      <span className="muted">Progress note</span>
-                      <textarea
-                        aria-label="Progress note content"
-                        name="content"
-                        defaultValue={`S:\nO:\nA:\nP:`}
+                      <span className="muted">Problem list search</span>
+                      <input
+                        aria-label="Problem list search"
+                        list="problem-catalog-options"
+                        value={problemSearch}
+                        onChange={(event) => setProblemSearch(event.currentTarget.value)}
+                        placeholder="Search active problem catalog"
                         required
                       />
                     </label>
+                    <p className="muted">{filteredProblemCatalog.length} catalog matches available in the search list.</p>
                     <div className="form-actions">
-                      <button className="primary-button" type="submit" data-testid="save-note-button" disabled={notePending}>
-                        {notePending ? "Saving note..." : "File progress note"}
+                      <button className="primary-button" type="submit" data-testid="add-problem-button" disabled={problemPending}>
+                        {problemPending ? "Adding problem..." : "Add problem"}
                       </button>
                     </div>
                   </div>
                 </form>
 
-                <div className="note-list">
-                  {activeEncounter.notes.map((note) => (
-                    <article key={note.id} className="note-row" data-testid={`note-row-${note.id}`}>
-                      <header>
-                        <div>
-                          <h3>{note.title}</h3>
-                          <p className="muted">
-                            {note.type} · {note.author} · {formatDateTime(new Date(note.createdAt))}
-                          </p>
-                        </div>
-                        <span className="status-pill" data-status={note.signed ? "SIGNED" : "OPEN"}>
-                          {note.signed ? "SIGNED" : "DRAFT"}
-                        </span>
-                      </header>
-                      <p style={{ whiteSpace: "pre-wrap" }}>{note.content}</p>
-                    </article>
+                <form onSubmit={handleAddDiagnosis} className="list-row list-row--compact" data-testid="diagnosis-form">
+                  <div className="form-grid">
+                    <label className="field">
+                      <span className="muted">Diagnosis search</span>
+                      <input
+                        aria-label="Diagnosis search"
+                        list="diagnosis-catalog-options"
+                        value={diagnosisSearch}
+                        onChange={(event) => setDiagnosisSearch(event.currentTarget.value)}
+                        placeholder="Search ICD-10 code or diagnosis name"
+                        required
+                      />
+                    </label>
+                    <p className="muted">{filteredDiagnosisCatalog.length} diagnosis matches available in the search list.</p>
+                    <div className="form-actions">
+                      <button className="primary-button" type="submit" data-testid="add-diagnosis-button" disabled={diagnosisPending}>
+                        {diagnosisPending ? "Adding diagnosis..." : "Add diagnosis"}
+                      </button>
+                    </div>
+                  </div>
+                </form>
+
+                <datalist id="problem-catalog-options">
+                  {filteredProblemCatalog.map((entry) => (
+                    <option key={entry.name} value={entry.name} />
                   ))}
-                </div>
+                </datalist>
+
+                <datalist id="diagnosis-catalog-options">
+                  {filteredDiagnosisCatalog.map((entry) => (
+                    <option key={`${entry.code}-${entry.name}`} value={formatDiagnosisCatalogValue(entry)} label={entry.category} />
+                  ))}
+                </datalist>
               </div>
             </SectionCard>
 
@@ -845,18 +1075,20 @@ export function PatientWorkspace({ initialPatient, orderCatalog, providerCatalog
                 {problemList.map((problem) => (
                   <div key={problem} className="problem-list__item">
                     <span>{problem}</span>
-                    <span className="problem-list__status">Active</span>
+                    <span className="problem-list__status">{normalizedNewVisitProblems.has(normalizeCatalogValue(problem)) ? "New" : "Active"}</span>
                   </div>
                 ))}
               </div>
             </SectionCard>
 
-            <SectionCard title="Visit Diagnoses" subtitle="Current encounter associations" className="section-card--diagnosis-list">
+            <SectionCard title="Diagnoses" subtitle="Documented on chart" className="section-card--diagnosis-list">
               <div className="problem-list">
-                {visitDiagnoses.map((diagnosis) => (
+                {diagnosisList.map((diagnosis) => (
                   <div key={diagnosis} className="problem-list__item">
                     <span>{diagnosis}</span>
-                    <span className="problem-list__status problem-list__status--muted">Visit</span>
+                    <span className="problem-list__status problem-list__status--muted">
+                      {normalizedNewVisitDiagnoses.has(normalizeCatalogValue(diagnosis)) ? "New" : "Dx"}
+                    </span>
                   </div>
                 ))}
               </div>
