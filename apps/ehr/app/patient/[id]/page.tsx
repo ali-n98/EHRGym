@@ -3,7 +3,9 @@ import { notFound } from "next/navigation";
 import { PatientWorkspace, type PatientWorkspaceData } from "../../../components/patient-workspace";
 import { parseJsonValue } from "../../../lib/chart";
 import { prisma } from "../../../lib/db";
+import { loadDiagnosisCatalogFromDb } from "../../../../../shared/diagnosis-catalog";
 import { loadOrderCatalogFromDb } from "../../../../../shared/order-catalog";
+import { loadProblemCatalogFromDb } from "../../../../../shared/problem-list-catalog";
 import { loadProviderCatalogFromDb } from "../../../../../shared/provider-catalog";
 
 type PatientPageData = {
@@ -15,6 +17,13 @@ type PatientPageData = {
   allergiesJson: string;
   problemList: Array<{
     name: string;
+  }>;
+  diagnoses: Array<{
+    id: string;
+    code: string;
+    category: string;
+    name: string;
+    createdAt: Date;
   }>;
   summary: string;
   encounters: Array<{
@@ -80,14 +89,28 @@ type PatientPageProps = {
 
 export default async function PatientPage({ params }: PatientPageProps) {
   const { id } = await params;
-  const orderCatalog = await loadOrderCatalogFromDb(prisma);
-  const providerCatalog = await loadProviderCatalogFromDb(prisma);
+  const [orderCatalog, providerCatalog, problemCatalog, diagnosisCatalog] = await Promise.all([
+    loadOrderCatalogFromDb(prisma),
+    loadProviderCatalogFromDb(prisma),
+    loadProblemCatalogFromDb(prisma),
+    loadDiagnosisCatalogFromDb(prisma)
+  ]);
 
   const patient = await prisma.patient.findUnique({
     where: { id },
     include: {
       problemList: {
         select: { name: true }
+      },
+      diagnoses: {
+        select: {
+          id: true,
+          code: true,
+          category: true,
+          name: true,
+          createdAt: true
+        },
+        orderBy: [{ category: "asc" }, { name: "asc" }, { code: "asc" }]
       },
       encounters: {
         orderBy: { startedAt: "desc" },
@@ -117,9 +140,6 @@ export default async function PatientPage({ params }: PatientPageProps) {
   }
 
   const activeEncounter = patient.encounters[0];
-  const scenario =
-    patient.scenarios.find((candidate: PatientPageData["scenarios"][number]) => candidate.encounterId === activeEncounter?.id) ??
-    patient.scenarios[0];
 
   if (!activeEncounter) {
     notFound();
@@ -133,6 +153,13 @@ export default async function PatientPage({ params }: PatientPageProps) {
     sex: patient.sex,
     allergies: parseJsonValue<string[]>(patient.allergiesJson),
     problemList: patient.problemList.map((problem) => problem.name),
+    diagnoses: patient.diagnoses.map((diagnosis) => ({
+      id: diagnosis.id,
+      code: diagnosis.code,
+      category: diagnosis.category,
+      name: diagnosis.name,
+      createdAt: diagnosis.createdAt.toISOString()
+    })),
     summary: patient.summary,
     encounters: patient.encounters.map((encounter) => ({
       id: encounter.id,
@@ -182,5 +209,13 @@ export default async function PatientPage({ params }: PatientPageProps) {
     }))
   };
 
-  return <PatientWorkspace initialPatient={initialPatient} orderCatalog={orderCatalog} providerCatalog={providerCatalog} />;
+  return (
+    <PatientWorkspace
+      initialPatient={initialPatient}
+      orderCatalog={orderCatalog}
+      providerCatalog={providerCatalog}
+      problemCatalog={problemCatalog}
+      diagnosisCatalog={diagnosisCatalog}
+    />
+  );
 }
