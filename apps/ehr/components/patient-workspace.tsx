@@ -137,6 +137,8 @@ type DiagnosisCatalogEntry = {
   name: string;
 };
 
+const ANY_ORDER_FILTER = "Any";
+
 function uniqueInOrder(values: string[]): string[] {
   const seen = new Set<string>();
   const uniqueValues: string[] = [];
@@ -153,18 +155,12 @@ function uniqueInOrder(values: string[]): string[] {
 }
 
 function buildInitialOrderSelection(orderCatalog: OrderCatalogEntry[]) {
-  const category = uniqueInOrder(orderCatalog.map((entry) => entry.cat1))[0] ?? "";
-  const higherGroup = uniqueInOrder(orderCatalog.filter((entry) => entry.cat1 === category).map((entry) => entry.cat2))[0] ?? "";
-  const lowerGroup =
-    uniqueInOrder(orderCatalog.filter((entry) => entry.cat1 === category && entry.cat2 === higherGroup).map((entry) => entry.cat3))[0] ?? "";
-  const orderName =
-    uniqueInOrder(
-      orderCatalog
-        .filter((entry) => entry.cat1 === category && entry.cat2 === higherGroup && entry.cat3 === lowerGroup)
-        .map((entry) => entry.orderName)
-    )[0] ?? "";
-
-  return { category, higherGroup, lowerGroup, orderName };
+  return {
+    category: ANY_ORDER_FILTER,
+    higherGroup: ANY_ORDER_FILTER,
+    lowerGroup: ANY_ORDER_FILTER,
+    orderName: ""
+  };
 }
 
 function normalizeCatalogValue(value: string) {
@@ -246,23 +242,53 @@ export function PatientWorkspace({ initialPatient, orderCatalog, providerCatalog
     [newVisitDiagnoses]
   );
   const getHigherGroupOptions = (category: string) =>
-    uniqueInOrder(orderCatalog.filter((entry) => entry.cat1 === category).map((entry) => entry.cat2));
+    uniqueInOrder(orderCatalog.filter((entry) => category === ANY_ORDER_FILTER || entry.cat1 === category).map((entry) => entry.cat2));
   const getLowerGroupOptions = (category: string, higherGroup: string) =>
-    uniqueInOrder(orderCatalog.filter((entry) => entry.cat1 === category && entry.cat2 === higherGroup).map((entry) => entry.cat3));
+    uniqueInOrder(
+      orderCatalog
+        .filter(
+          (entry) =>
+            (category === ANY_ORDER_FILTER || entry.cat1 === category) &&
+            (higherGroup === ANY_ORDER_FILTER || entry.cat2 === higherGroup)
+        )
+        .map((entry) => entry.cat3)
+    );
   const getOrderNameOptions = (category: string, higherGroup: string, lowerGroup: string) =>
     uniqueInOrder(
       orderCatalog
-        .filter((entry) => entry.cat1 === category && entry.cat2 === higherGroup && entry.cat3 === lowerGroup)
+        .filter(
+          (entry) =>
+            (category === ANY_ORDER_FILTER || entry.cat1 === category) &&
+            (higherGroup === ANY_ORDER_FILTER || entry.cat2 === higherGroup) &&
+            (lowerGroup === ANY_ORDER_FILTER || entry.cat3 === lowerGroup)
+        )
         .map((entry) => entry.orderName)
     );
 
-  const categoryOptions = useMemo(() => uniqueInOrder(orderCatalog.map((entry) => entry.cat1)), [orderCatalog]);
-  const higherGroupOptions = useMemo(() => getHigherGroupOptions(selectedCategory), [orderCatalog, selectedCategory]);
-  const lowerGroupOptions = useMemo(() => getLowerGroupOptions(selectedCategory, selectedHigherGroup), [orderCatalog, selectedCategory, selectedHigherGroup]);
-  const orderNameOptions = useMemo(
+  const categoryOptions = useMemo(() => [ANY_ORDER_FILTER, ...uniqueInOrder(orderCatalog.map((entry) => entry.cat1))], [orderCatalog]);
+  const higherGroupOptions = useMemo(
+    () => [ANY_ORDER_FILTER, ...getHigherGroupOptions(selectedCategory)],
+    [orderCatalog, selectedCategory]
+  );
+  const lowerGroupOptions = useMemo(
+    () => [ANY_ORDER_FILTER, ...getLowerGroupOptions(selectedCategory, selectedHigherGroup)],
+    [orderCatalog, selectedCategory, selectedHigherGroup]
+  );
+  const scopedOrderNameOptions = useMemo(
     () => getOrderNameOptions(selectedCategory, selectedHigherGroup, selectedLowerGroup),
     [orderCatalog, selectedCategory, selectedHigherGroup, selectedLowerGroup]
   );
+  const orderNameOptions = useMemo(() => {
+    const query = normalizeCatalogValue(selectedOrderName);
+
+    if (!query) {
+      return scopedOrderNameOptions.slice(0, 20);
+    }
+
+    return scopedOrderNameOptions
+      .filter((orderName) => normalizeCatalogValue(orderName).includes(query))
+      .slice(0, 20);
+  }, [scopedOrderNameOptions, selectedOrderName]);
 
   const globalNavItems = [
     { label: "Chart Review", href: "#chart-review" },
@@ -375,8 +401,22 @@ export function PatientWorkspace({ initialPatient, orderCatalog, providerCatalog
     setErrorMessage(null);
     setOrderPending(true);
 
-    if (!selectedCategory || !selectedOrderName) {
-      setErrorMessage("Please choose a valid order path before submitting.");
+    if (!selectedOrderName) {
+      setErrorMessage("Choose an order from the scoped catalog before submitting.");
+      setOrderPending(false);
+      return;
+    }
+
+    const matchedOrder = orderCatalog.find(
+      (entry) =>
+        (selectedCategory === ANY_ORDER_FILTER || entry.cat1 === selectedCategory) &&
+        (selectedHigherGroup === ANY_ORDER_FILTER || entry.cat2 === selectedHigherGroup) &&
+        (selectedLowerGroup === ANY_ORDER_FILTER || entry.cat3 === selectedLowerGroup) &&
+        normalizeCatalogValue(entry.orderName) === normalizeCatalogValue(selectedOrderName)
+    );
+
+    if (!matchedOrder) {
+      setErrorMessage("Choose an order from the search list before submitting.");
       setOrderPending(false);
       return;
     }
@@ -388,8 +428,8 @@ export function PatientWorkspace({ initialPatient, orderCatalog, providerCatalog
       const result = await postWorkflow({
         type: "create_order",
         encounterId: activeEncounter.id,
-        name: selectedOrderName,
-        category: selectedCategory,
+        name: matchedOrder.orderName,
+        category: matchedOrder.cat1,
         parameters: formData.get("parameters"),
         rationale: formData.get("rationale"),
         submitForSignature: formData.get("submitForSignature") === "on"
@@ -402,14 +442,10 @@ export function PatientWorkspace({ initialPatient, orderCatalog, providerCatalog
         }));
       }
       form.reset();
-      const nextCategory = categoryOptions[0] ?? "";
-      const nextHigherGroup = getHigherGroupOptions(nextCategory)[0] ?? "";
-      const nextLowerGroup = getLowerGroupOptions(nextCategory, nextHigherGroup)[0] ?? "";
-      const nextOrderName = getOrderNameOptions(nextCategory, nextHigherGroup, nextLowerGroup)[0] ?? "";
-      setSelectedCategory(nextCategory);
-      setSelectedHigherGroup(nextHigherGroup);
-      setSelectedLowerGroup(nextLowerGroup);
-      setSelectedOrderName(nextOrderName);
+      setSelectedCategory(ANY_ORDER_FILTER);
+      setSelectedHigherGroup(ANY_ORDER_FILTER);
+      setSelectedLowerGroup(ANY_ORDER_FILTER);
+      setSelectedOrderName("");
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : "Failed to save order");
     } finally {
@@ -818,15 +854,10 @@ export function PatientWorkspace({ initialPatient, orderCatalog, providerCatalog
                         required
                         value={selectedCategory}
                         onChange={(event) => {
-                          const nextCategory = event.currentTarget.value;
-                          const nextHigherGroup = getHigherGroupOptions(nextCategory)[0] ?? "";
-                          const nextLowerGroup = getLowerGroupOptions(nextCategory, nextHigherGroup)[0] ?? "";
-                          const nextOrderName = getOrderNameOptions(nextCategory, nextHigherGroup, nextLowerGroup)[0] ?? "";
-
-                          setSelectedCategory(nextCategory);
-                          setSelectedHigherGroup(nextHigherGroup);
-                          setSelectedLowerGroup(nextLowerGroup);
-                          setSelectedOrderName(nextOrderName);
+                          setSelectedCategory(event.currentTarget.value);
+                          setSelectedHigherGroup(ANY_ORDER_FILTER);
+                          setSelectedLowerGroup(ANY_ORDER_FILTER);
+                          setSelectedOrderName("");
                         }}
                       >
                         {categoryOptions.map((category) => (
@@ -844,15 +875,10 @@ export function PatientWorkspace({ initialPatient, orderCatalog, providerCatalog
                         required
                         value={selectedHigherGroup}
                         onChange={(event) => {
-                          const nextHigherGroup = event.currentTarget.value;
-                          const nextLowerGroup = getLowerGroupOptions(selectedCategory, nextHigherGroup)[0] ?? "";
-                          const nextOrderName = getOrderNameOptions(selectedCategory, nextHigherGroup, nextLowerGroup)[0] ?? "";
-
-                          setSelectedHigherGroup(nextHigherGroup);
-                          setSelectedLowerGroup(nextLowerGroup);
-                          setSelectedOrderName(nextOrderName);
+                          setSelectedHigherGroup(event.currentTarget.value);
+                          setSelectedLowerGroup(ANY_ORDER_FILTER);
+                          setSelectedOrderName("");
                         }}
-                        disabled={!selectedCategory || higherGroupOptions.length === 0}
                       >
                         {higherGroupOptions.map((higherGroup) => (
                           <option key={higherGroup} value={higherGroup}>
@@ -869,13 +895,9 @@ export function PatientWorkspace({ initialPatient, orderCatalog, providerCatalog
                         required
                         value={selectedLowerGroup}
                         onChange={(event) => {
-                          const nextLowerGroup = event.currentTarget.value;
-                          const nextOrderName = getOrderNameOptions(selectedCategory, selectedHigherGroup, nextLowerGroup)[0] ?? "";
-
-                          setSelectedLowerGroup(nextLowerGroup);
-                          setSelectedOrderName(nextOrderName);
+                          setSelectedLowerGroup(event.currentTarget.value);
+                          setSelectedOrderName("");
                         }}
-                        disabled={!selectedHigherGroup || lowerGroupOptions.length === 0}
                       >
                         {lowerGroupOptions.map((lowerGroup) => (
                           <option key={lowerGroup} value={lowerGroup}>
@@ -886,21 +908,17 @@ export function PatientWorkspace({ initialPatient, orderCatalog, providerCatalog
                     </label>
                     <label className="field">
                       <span className="muted">Order search</span>
-                      <select
+                      <input
                         aria-label="Order search"
                         name="name"
                         required
+                        list="order-catalog-options"
                         value={selectedOrderName}
                         onChange={(event) => setSelectedOrderName(event.currentTarget.value)}
-                        disabled={!selectedLowerGroup || orderNameOptions.length === 0}
-                      >
-                        {orderNameOptions.map((orderName) => (
-                          <option key={orderName} value={orderName}>
-                            {orderName}
-                          </option>
-                        ))}
-                      </select>
+                        placeholder="Search orders in selected scope"
+                      />
                     </label>
+                    <p className="muted">{orderNameOptions.length} scoped order matches available in the search list.</p>
                     <label className="field">
                       <span className="muted">Parameters</span>
                       <input aria-label="Order parameters" name="parameters" placeholder="1 L IV once" required />
@@ -957,6 +975,12 @@ export function PatientWorkspace({ initialPatient, orderCatalog, providerCatalog
                     </article>
                   ))}
                 </div>
+
+                <datalist id="order-catalog-options">
+                  {orderNameOptions.map((orderName) => (
+                    <option key={orderName} value={orderName} />
+                  ))}
+                </datalist>
               </div>
             </SectionCard>
 
