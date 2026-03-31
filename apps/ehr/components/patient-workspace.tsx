@@ -209,14 +209,11 @@ export function PatientWorkspace({ initialPatient, orderCatalog, providerCatalog
   const requiredOrders = scenario?.requiredOrders ?? [];
   const requiredNoteElements = scenario?.requiredNoteElements ?? [];
   const rubric = scenario?.rubric ?? [];
-  const problemList = useMemo(() => uniqueInOrder([...patient.problemList, activeEncounter?.reasonForVisit].filter(Boolean)), [activeEncounter?.reasonForVisit, patient.problemList]);
-  const diagnosisList = useMemo(() => {
-    if (patient.diagnoses.length > 0) {
-      return uniqueInOrder(patient.diagnoses.map((diagnosis) => `${diagnosis.code} - ${diagnosis.name}`));
-    }
-
-    return uniqueInOrder([scenario?.title ?? activeEncounter?.reasonForVisit, activeEncounter?.type, patient.summary].filter(Boolean));
-  }, [activeEncounter?.reasonForVisit, activeEncounter?.type, patient.diagnoses, patient.summary, scenario?.title]);
+  const problemList = useMemo(() => uniqueInOrder(patient.problemList || []), [patient.problemList]);
+  const diagnosisList = useMemo(
+    () => uniqueInOrder(patient.diagnoses.map((diagnosis) => `${diagnosis.code} - ${diagnosis.name}`)),
+    [patient.diagnoses]
+  );
   const filteredProblemCatalog = useMemo(() => {
     const query = normalizeCatalogValue(problemSearch);
     const matches = query
@@ -684,10 +681,13 @@ export function PatientWorkspace({ initialPatient, orderCatalog, providerCatalog
 
         <ActivityNav items={activityNavItems} className="chart-activity-bar workspace-pills workspace-pills--wide" ariaLabel="Activity navigation" defaultHref="#summary" />
 
-        <div id="summary" />
-
         <div className="content-grid content-grid--chart">
           <div className="content-stack">
+            <SectionCard title="Patient summary" testId="summary-panel" className="section-card--summary">
+              <div id="summary" data-testid="patient-summary" style={{ whiteSpace: "pre-wrap" }}>
+                {patient.summary}
+              </div>
+            </SectionCard>
             <SectionCard title="Chart Review" subtitle="Encounter timeline and laboratory review" testId="chart-review-panel" className="section-card--chart">
               <div id="chart-review">
                 <ChartReviewTabs encounters={patient.encounters} labs={activeEncounter.labs} notes={activeEncounter.notes} />

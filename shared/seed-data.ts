@@ -39,6 +39,7 @@ export type SeedEncounter = {
   labs: SeedLab[];
   notes: SeedNote[];
   orders: SeedOrder[];
+  newProblems: string[];
 };
 
 export type SeedScenario = {
@@ -97,7 +98,8 @@ export const seedPatients: SeedPatient[] = [
         ],
         orders: [
           { id: "ord-1001", name: "Basic metabolic panel", category: "LAB", parameters: { frequency: "q6h" }, status: "SIGNED", rationale: "Trend renal function.", createdAt: "2026-03-05T16:55:00.000Z" }
-        ]
+        ],
+        newProblems: ["Fall risk", "CKD stage 3"]
       }
     ],
     scenarios: [
@@ -150,7 +152,8 @@ export const seedPatients: SeedPatient[] = [
         ],
         orders: [
           { id: "ord-2001", name: "Chest X-ray", category: "IMAGING", parameters: { priority: "Routine" }, status: "PENDING_SIGNATURE", rationale: "Evaluate infiltrate.", createdAt: "2026-03-04T11:50:00.000Z" }
-        ]
+        ],
+        newProblems: ["Droplet precautions"]
       }
     ],
     scenarios: [
@@ -201,7 +204,8 @@ export const seedPatients: SeedPatient[] = [
         ],
         orders: [
           { id: "ord-3001", name: "Basic metabolic panel", category: "LAB", parameters: { frequency: "q2h" }, status: "SIGNED", rationale: "Monitor anion gap closure and potassium.", createdAt: "2026-03-06T03:00:00.000Z" }
-        ]
+        ],
+        newProblems: ["Type 1 DM", "Insulin pump"]
       }
     ],
     scenarios: [
@@ -261,7 +265,8 @@ export const seedPatients: SeedPatient[] = [
         orders: [
           { id: "ord-4001", name: "ECG 12-lead", category: "LAB", parameters: { frequency: "stat" }, status: "SIGNED", rationale: "Evaluate ST changes.", createdAt: "2026-03-07T06:25:00.000Z" },
           { id: "ord-4002", name: "Troponin I serial", category: "LAB", parameters: { frequency: "q6h" }, status: "SIGNED", rationale: "Trend cardiac biomarkers.", createdAt: "2026-03-07T06:25:00.000Z" }
-        ]
+        ],
+        newProblems: ["HTN", "Hyperlipidemia", "Prior PCI 2019"]
       }
     ],
     scenarios: [
@@ -321,7 +326,8 @@ export const seedPatients: SeedPatient[] = [
         orders: [
           { id: "ord-5001", name: "CBC", category: "LAB", parameters: { frequency: "q4h" }, status: "SIGNED", rationale: "Trend hemoglobin.", createdAt: "2026-03-05T20:35:00.000Z" },
           { id: "ord-5002", name: "Type and screen", category: "LAB", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Prepare for transfusion.", createdAt: "2026-03-05T20:35:00.000Z" }
-        ]
+        ],
+        newProblems: ["Cirrhosis", "EtOH use disorder"]
       }
     ],
     scenarios: [
@@ -379,7 +385,8 @@ export const seedPatients: SeedPatient[] = [
         orders: [
           { id: "ord-6001", name: "ABG", category: "LAB", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Assess ventilation and acid-base status.", createdAt: "2026-03-06T09:40:00.000Z" },
           { id: "ord-6002", name: "Chest X-ray", category: "IMAGING", parameters: { priority: "Routine" }, status: "PENDING_SIGNATURE", rationale: "Rule out pneumonia or pneumothorax.", createdAt: "2026-03-06T09:40:00.000Z" }
-        ]
+        ],
+        newProblems: ["COPD GOLD III", "Home O2 2L"]
       }
     ],
     scenarios: [
@@ -435,7 +442,8 @@ export const seedPatients: SeedPatient[] = [
         orders: [
           { id: "ord-7001", name: "BNP", category: "LAB", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Assess heart failure severity.", createdAt: "2026-03-05T15:20:00.000Z" },
           { id: "ord-7002", name: "Chest X-ray", category: "IMAGING", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Evaluate pulmonary edema.", createdAt: "2026-03-05T15:20:00.000Z" }
-        ]
+        ],
+        newProblems: ["HFrEF EF 25%", "ICD in place"]
       }
     ],
     scenarios: [
@@ -491,7 +499,8 @@ export const seedPatients: SeedPatient[] = [
         orders: [
           { id: "ord-8001", name: "D-dimer", category: "LAB", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Risk-stratify for PE.", createdAt: "2026-03-06T14:10:00.000Z" },
           { id: "ord-8002", name: "ABG", category: "LAB", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Assess oxygenation.", createdAt: "2026-03-06T14:10:00.000Z" }
-        ]
+        ],
+        newProblems: ["Recent knee surgery", "BMI 34"]
       }
     ],
     scenarios: [
@@ -549,7 +558,8 @@ export const seedPatients: SeedPatient[] = [
         orders: [
           { id: "ord-9001", name: "Blood cultures x2", category: "LAB", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Identify bacteremia.", createdAt: "2026-03-06T06:05:00.000Z" },
           { id: "ord-9002", name: "Urinalysis", category: "LAB", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Evaluate urinary source.", createdAt: "2026-03-06T06:05:00.000Z" }
-        ]
+        ],
+        newProblems: ["Dementia", "Chronic Foley catheter"]
       }
     ],
     scenarios: [
@@ -610,7 +620,8 @@ export const seedPatients: SeedPatient[] = [
         orders: [
           { id: "ord-10001", name: "Lipase", category: "LAB", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Confirm pancreatitis diagnosis.", createdAt: "2026-03-05T22:10:00.000Z" },
           { id: "ord-10002", name: "CBC", category: "LAB", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Assess for leukocytosis.", createdAt: "2026-03-05T22:10:00.000Z" }
-        ]
+        ],
+        newProblems: ["EtOH use", "Obesity BMI 36"]
       }
     ],
     scenarios: [
@@ -667,7 +678,8 @@ export const seedPatients: SeedPatient[] = [
         orders: [
           { id: "ord-11001", name: "Telemetry", category: "LAB", parameters: { duration: "Continuous" }, status: "SIGNED", rationale: "Continuous rhythm monitoring.", createdAt: "2026-03-06T18:10:00.000Z" },
           { id: "ord-11002", name: "TSH", category: "LAB", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Rule out thyroid etiology.", createdAt: "2026-03-06T18:10:00.000Z" }
-        ]
+        ],
+        newProblems: ["Hypothyroidism", "Valvular disease"]
       }
     ],
     scenarios: [
@@ -725,7 +737,8 @@ export const seedPatients: SeedPatient[] = [
         orders: [
           { id: "ord-12001", name: "Serum osmolality", category: "LAB", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Characterize hyponatremia.", createdAt: "2026-03-06T10:10:00.000Z" },
           { id: "ord-12002", name: "Urine electrolytes", category: "LAB", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "SIADH workup.", createdAt: "2026-03-06T10:10:00.000Z" }
-        ]
+        ],
+        newProblems: ["SIADH", "Small cell lung cancer"]
       }
     ],
     scenarios: [
@@ -784,7 +797,8 @@ export const seedPatients: SeedPatient[] = [
         orders: [
           { id: "ord-13001", name: "CT head without contrast", category: "IMAGING", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Rule out hemorrhagic stroke.", createdAt: "2026-03-07T03:20:00.000Z" },
           { id: "ord-13002", name: "CBC", category: "LAB", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Pre-thrombolytic lab panel.", createdAt: "2026-03-07T03:20:00.000Z" }
-        ]
+        ],
+        newProblems: ["Atrial fibrillation", "Not on anticoagulation"]
       }
     ],
     scenarios: [
@@ -843,7 +857,8 @@ export const seedPatients: SeedPatient[] = [
         orders: [
           { id: "ord-14001", name: "Blood cultures x2", category: "LAB", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Rule out bacteremia.", createdAt: "2026-03-06T12:40:00.000Z" },
           { id: "ord-14002", name: "CBC with differential", category: "LAB", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Assess leukocytosis.", createdAt: "2026-03-06T12:40:00.000Z" }
-        ]
+        ],
+        newProblems: ["IVDU", "Hepatitis C", "Prior MRSA"]
       }
     ],
     scenarios: [
@@ -895,7 +910,8 @@ export const seedPatients: SeedPatient[] = [
         orders: [
           { id: "ord-15001", name: "ECG 12-lead", category: "LAB", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Evaluate for hyperkalemia-related changes.", createdAt: "2026-03-07T01:25:00.000Z" },
           { id: "ord-15002", name: "Basic metabolic panel", category: "LAB", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Confirm potassium level.", createdAt: "2026-03-07T01:25:00.000Z" }
-        ]
+        ],
+        newProblems: ["ESRD on HD", "Missed dialysis x2"]
       }
     ],
     scenarios: [
@@ -952,7 +968,8 @@ export const seedPatients: SeedPatient[] = [
         orders: [
           { id: "ord-16001", name: "Ammonia level", category: "LAB", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Assess encephalopathy severity.", createdAt: "2026-03-05T19:40:00.000Z" },
           { id: "ord-16002", name: "Hepatic function panel", category: "LAB", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Baseline liver function.", createdAt: "2026-03-05T19:40:00.000Z" }
-        ]
+        ],
+        newProblems: ["Cirrhosis MELD 24", "Ascites"]
       }
     ],
     scenarios: [
@@ -1007,7 +1024,8 @@ export const seedPatients: SeedPatient[] = [
         ],
         orders: [
           { id: "ord-17001", name: "Tryptase level", category: "LAB", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Confirm anaphylaxis diagnosis.", createdAt: "2026-03-06T16:20:00.000Z" }
-        ]
+        ],
+        newProblems: ["Asthma", "EpiPen prescribed"]
       }
     ],
     scenarios: [
@@ -1065,7 +1083,8 @@ export const seedPatients: SeedPatient[] = [
         orders: [
           { id: "ord-18001", name: "X-ray left hip", category: "IMAGING", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Evaluate fracture.", createdAt: "2026-03-06T08:10:00.000Z" },
           { id: "ord-18002", name: "CBC", category: "LAB", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Assess blood loss.", createdAt: "2026-03-06T08:10:00.000Z" }
-        ]
+        ],
+        newProblems: ["Osteoporosis", "Warfarin for AFib"]
       }
     ],
     scenarios: [
@@ -1116,7 +1135,8 @@ export const seedPatients: SeedPatient[] = [
         orders: [
           { id: "ord-19001", name: "ABG", category: "LAB", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Assess ventilatory status.", createdAt: "2026-03-07T02:05:00.000Z" },
           { id: "ord-19002", name: "Chest X-ray", category: "IMAGING", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Rule out pneumothorax.", createdAt: "2026-03-07T02:05:00.000Z" }
-        ]
+        ],
+        newProblems: ["Severe persistent asthma", "Prior intubation 2024"]
       }
     ],
     scenarios: [
@@ -1176,7 +1196,8 @@ export const seedPatients: SeedPatient[] = [
         orders: [
           { id: "ord-20001", name: "Comprehensive metabolic panel", category: "LAB", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Baseline metabolic assessment.", createdAt: "2026-03-06T07:10:00.000Z" },
           { id: "ord-20002", name: "Ethanol level", category: "LAB", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Confirm alcohol clearance.", createdAt: "2026-03-06T07:10:00.000Z" }
-        ]
+        ],
+        newProblems: ["Alcohol use disorder", "Seizure history"]
       }
     ],
     scenarios: [
@@ -1234,7 +1255,8 @@ export const seedPatients: SeedPatient[] = [
         orders: [
           { id: "ord-21001", name: "C. diff toxin PCR", category: "LAB", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Confirm recurrent C. diff.", createdAt: "2026-03-05T13:10:00.000Z" },
           { id: "ord-21002", name: "Stool studies", category: "LAB", parameters: { priority: "Urgent" }, status: "SIGNED", rationale: "Rule out other enteric pathogens.", createdAt: "2026-03-05T13:10:00.000Z" }
-        ]
+        ],
+        newProblems: ["Recent hospitalization", "Prior C. diff infection"]
       }
     ],
     scenarios: [
@@ -1286,7 +1308,8 @@ export const seedPatients: SeedPatient[] = [
         orders: [
           { id: "ord-22001", name: "Thyroid function panel", category: "LAB", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Confirm thyrotoxicosis.", createdAt: "2026-03-07T04:40:00.000Z" },
           { id: "ord-22002", name: "CBC", category: "LAB", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Baseline before thionamide.", createdAt: "2026-03-07T04:40:00.000Z" }
-        ]
+        ],
+        newProblems: ["Graves disease", "Medication non-adherent"]
       }
     ],
     scenarios: [
@@ -1345,7 +1368,8 @@ export const seedPatients: SeedPatient[] = [
         orders: [
           { id: "ord-23001", name: "CBC with reticulocyte count", category: "LAB", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Assess hemolysis severity.", createdAt: "2026-03-06T20:10:00.000Z" },
           { id: "ord-23002", name: "Type and screen", category: "LAB", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Prepare for possible transfusion.", createdAt: "2026-03-06T20:10:00.000Z" }
-        ]
+        ],
+        newProblems: ["HbSS disease", "Chronic pain", "Cholecystectomy 2024"]
       }
     ],
     scenarios: [
@@ -1403,7 +1427,8 @@ export const seedPatients: SeedPatient[] = [
         orders: [
           { id: "ord-24001", name: "Lumbar puncture", category: "LAB", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Obtain CSF for analysis.", createdAt: "2026-03-07T00:20:00.000Z" },
           { id: "ord-24002", name: "Blood cultures x2", category: "LAB", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Identify causative organism.", createdAt: "2026-03-07T00:20:00.000Z" }
-        ]
+        ],
+        newProblems: ["College student", "Meningococcal vaccine pending"]
       }
     ],
     scenarios: [
@@ -1463,7 +1488,8 @@ export const seedPatients: SeedPatient[] = [
         orders: [
           { id: "ord-25001", name: "KUB X-ray", category: "IMAGING", parameters: { priority: "Urgent" }, status: "SIGNED", rationale: "Assess for obstruction vs ileus.", createdAt: "2026-03-07T06:10:00.000Z" },
           { id: "ord-25002", name: "Basic metabolic panel", category: "LAB", parameters: { priority: "STAT" }, status: "SIGNED", rationale: "Evaluate electrolytes.", createdAt: "2026-03-07T06:10:00.000Z" }
-        ]
+        ],
+        newProblems: ["POD 3 colectomy", "Type 2 DM"]
       }
     ],
     scenarios: [
