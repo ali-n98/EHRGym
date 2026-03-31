@@ -25,8 +25,13 @@ export async function resetDatabase(prisma: PrismaClient) {
         age: patient.age,
         sex: patient.sex,
         allergiesJson: JSON.stringify(patient.allergies),
-        bannerFlagsJson: JSON.stringify(patient.bannerFlags),
         summary: patient.summary,
+        problemList: {
+          create: patient.problemList.map((problem, index) => ({
+            id: `${patient.id}-problem-${index + 1}`,
+            name: problem
+          }))
+        },
         encounters: {
           create: patient.encounters.map((encounter) => ({
             id: encounter.id,

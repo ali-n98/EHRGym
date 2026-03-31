@@ -3,7 +3,7 @@ import Link from "next/link";
 import { AppBrand } from "../components/app-brand";
 import { SectionCard } from "../components/section-card";
 import { WorkspaceSidebar } from "../components/workspace-sidebar";
-import { formatDateTime, parseJsonValue } from "../lib/chart";
+import { formatDateTime } from "../lib/chart";
 import { prisma } from "../lib/db";
 
 type HomePatient = {
@@ -13,7 +13,9 @@ type HomePatient = {
   age: number;
   sex: string;
   summary: string;
-  bannerFlagsJson: string;
+  problemList: Array<{
+    name: string;
+  }>;
   encounters: Array<{
     status: string;
     reasonForVisit: string;
@@ -34,6 +36,9 @@ export default async function HomePage() {
   const patients: HomePatient[] = await prisma.patient.findMany({
     orderBy: { fullName: "asc" },
     include: {
+      problemList: {
+        select: { name: true }
+      },
       encounters: {
         take: 1,
         orderBy: { startedAt: "desc" }
@@ -47,7 +52,7 @@ export default async function HomePage() {
 
   const leadPatient = patients[0];
   const leadEncounter = leadPatient?.encounters[0];
-  const leadFlags = leadPatient ? parseJsonValue<string[]>(leadPatient.bannerFlagsJson) : [];
+  const leadProblemList = leadPatient?.problemList.map((problem) => problem.name) ?? [];
   const openCount = patients.filter((patient) => patient.encounters[0]?.status === "OPEN").length;
   const signedCount = patients.length - openCount;
 
@@ -139,7 +144,7 @@ export default async function HomePage() {
                 {patients.map((patient: HomePatient) => {
                   const encounter = patient.encounters[0];
                   const scenario = patient.scenarios[0];
-                  const flags = parseJsonValue<string[]>(patient.bannerFlagsJson);
+                  const problemList = patient.problemList.map((problem) => problem.name);
 
                   return (
                     <Link
@@ -169,7 +174,7 @@ export default async function HomePage() {
                       </div>
                       <div>
                         <strong>{encounter ? formatDateTime(encounter.startedAt) : "Pending"}</strong>
-                        <p className="muted">{scenario ? cleanObjective(scenario.objective) : flags.join(" · ")}</p>
+                        <p className="muted">{scenario ? cleanObjective(scenario.objective) : problemList.join(" · ")}</p>
                       </div>
                     </Link>
                   );
@@ -196,9 +201,9 @@ export default async function HomePage() {
                     <span>Open chart to continue workflow</span>
                   </div>
                   <div className="summary-flags">
-                    {leadFlags.map((flag) => (
-                      <span key={flag} className="summary-flag">
-                        {flag}
+                    {leadProblemList.map((problem) => (
+                      <span key={problem} className="summary-flag">
+                        {problem}
                       </span>
                     ))}
                   </div>
