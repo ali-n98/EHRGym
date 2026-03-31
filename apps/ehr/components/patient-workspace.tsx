@@ -684,10 +684,13 @@ export function PatientWorkspace({ initialPatient, orderCatalog, providerCatalog
 
         <ActivityNav items={activityNavItems} className="chart-activity-bar workspace-pills workspace-pills--wide" ariaLabel="Activity navigation" defaultHref="#summary" />
 
-        <div id="summary" />
-
         <div className="content-grid content-grid--chart">
           <div className="content-stack">
+            <SectionCard title="Patient summary" testId="summary-panel" className="section-card--summary">
+              <div id="summary" data-testid="patient-summary" style={{ whiteSpace: "pre-wrap" }}>
+                {patient.summary}
+              </div>
+            </SectionCard>
             <SectionCard title="Chart Review" subtitle="Encounter timeline and laboratory review" testId="chart-review-panel" className="section-card--chart">
               <div id="chart-review">
                 <ChartReviewTabs encounters={patient.encounters} labs={activeEncounter.labs} notes={activeEncounter.notes} />
