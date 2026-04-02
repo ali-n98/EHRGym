@@ -57,13 +57,20 @@ def save_step(steps_path: Path, screenshots_dir: Path, *, index: int, kind: str,
     )
 
 
-def request_action(client: httpx.Client, policy_url: str, response: JsonDict) -> tuple[JsonDict, JsonDict]:
+def request_action(
+    client: httpx.Client,
+    policy_url: str,
+    response: JsonDict,
+    *,
+    previous_response: JsonDict | None,
+) -> tuple[JsonDict, JsonDict]:
     payload = {
         "timestamp": utc_now_iso(),
         "goal": response["observation"]["goal"],
         "observation": response["observation"],
         "state": response["state"],
         "allowed_actions": build_allowed_actions(),
+        "previous_response": previous_response,
     }
     policy_response = client.post(policy_url, json=payload)
     policy_response.raise_for_status()
@@ -111,14 +118,21 @@ def main() -> None:
     with httpx.Client(base_url=args.env_url, timeout=90.0) as env_client, httpx.Client(timeout=90.0) as policy_client:
         reset_response = post_json(env_client, "/reset", reset_request or None)
         current_response = reset_response
+        previous_response: JsonDict | None = None
         print(f"reset | {summarize_step(current_response)}")
 
         if steps_path and screenshots_dir:
             save_step(steps_path, screenshots_dir, index=0, kind="reset", action=None, response=current_response)
 
         for index in range(1, args.max_steps + 1):
-            policy_payload, policy_response = request_action(policy_client, args.policy_url, current_response)
+            policy_payload, policy_response = request_action(
+                policy_client,
+                args.policy_url,
+                current_response,
+                previous_response=previous_response,
+            )
             action = policy_response.get("action", policy_response)
+            previous_response = current_response
             current_response = post_json(env_client, "/step", action)
             print(f"policy[{index}]={action['type']} | {summarize_step(current_response)}")
             if steps_path and screenshots_dir:
