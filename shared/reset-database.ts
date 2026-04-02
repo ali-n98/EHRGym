@@ -1,10 +1,10 @@
 import type { PrismaClient } from "@prisma/client";
 
 import { seedPatients } from "./seed-data";
-import { seedOrderCatalogFromCsv } from "./order-catalog.js";
-import { seedProblemCatalogFromCsv } from "./problem-list-catalog.js";
-import { seedDiagnosisCatalogFromCsv } from "./diagnosis-catalog.js";
-import { seedProviderCatalogFromCsv } from "./provider-catalog.js";
+import { seedOrderCatalogFromCsv } from "./order-catalog";
+import { seedProblemCatalogFromCsv } from "./problem-list-catalog";
+import { seedDiagnosisCatalogFromCsv } from "./diagnosis-catalog";
+import { seedProviderCatalogFromCsv } from "./provider-catalog";
 
 export async function resetDatabase(prisma: PrismaClient) {
   await prisma.referral.deleteMany();
