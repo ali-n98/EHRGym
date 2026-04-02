@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 from typing import Any
 
@@ -67,12 +68,28 @@ def request_action(client: httpx.Client, policy_url: str, response: JsonDict) ->
     policy_response = client.post(policy_url, json=payload)
     policy_response.raise_for_status()
     data = policy_response.json()
+
+    # Some policy servers return a JSON-encoded string instead of an object.
+    if isinstance(data, str):
+        try:
+            data = json.loads(data)
+        except json.JSONDecodeError as exc:
+            raise ValueError("Policy endpoint returned a string, but it is not valid JSON.") from exc
+
     if isinstance(data, dict) and "action" in data:
         action = data["action"]
     elif isinstance(data, dict):
         action = data
     else:
         raise ValueError("Policy endpoint must return a JSON object or an object with an 'action' field.")
+
+    # Some policies return the action itself as a JSON-encoded string.
+    if isinstance(action, str):
+        try:
+            action = json.loads(action)
+        except json.JSONDecodeError as exc:
+            raise ValueError("Policy action was a string, but it is not valid JSON.") from exc
+
     if not isinstance(action, dict) or "type" not in action:
         raise ValueError("Policy action must be a JSON object containing a 'type' field.")
     return payload, data
