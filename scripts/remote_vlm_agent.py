@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 from typing import Any
 
@@ -56,23 +57,48 @@ def save_step(steps_path: Path, screenshots_dir: Path, *, index: int, kind: str,
     )
 
 
-def request_action(client: httpx.Client, policy_url: str, response: JsonDict) -> tuple[JsonDict, JsonDict]:
+def request_action(
+    client: httpx.Client,
+    policy_url: str,
+    response: JsonDict,
+    *,
+    previous_response: JsonDict | None,
+    previous_action: JsonDict | None,
+) -> tuple[JsonDict, JsonDict]:
     payload = {
         "timestamp": utc_now_iso(),
         "goal": response["observation"]["goal"],
         "observation": response["observation"],
         "state": response["state"],
         "allowed_actions": build_allowed_actions(),
+        "previous_response": previous_response,
+        "previous_action": previous_action,
     }
     policy_response = client.post(policy_url, json=payload)
     policy_response.raise_for_status()
     data = policy_response.json()
+
+    # Some policy servers return a JSON-encoded string instead of an object.
+    if isinstance(data, str):
+        try:
+            data = json.loads(data)
+        except json.JSONDecodeError as exc:
+            raise ValueError("Policy endpoint returned a string, but it is not valid JSON.") from exc
+
     if isinstance(data, dict) and "action" in data:
         action = data["action"]
     elif isinstance(data, dict):
         action = data
     else:
         raise ValueError("Policy endpoint must return a JSON object or an object with an 'action' field.")
+
+    # Some policies return the action itself as a JSON-encoded string.
+    if isinstance(action, str):
+        try:
+            action = json.loads(action)
+        except json.JSONDecodeError as exc:
+            raise ValueError("Policy action was a string, but it is not valid JSON.") from exc
+
     if not isinstance(action, dict) or "type" not in action:
         raise ValueError("Policy action must be a JSON object containing a 'type' field.")
     return payload, data
@@ -94,16 +120,27 @@ def main() -> None:
     with httpx.Client(base_url=args.env_url, timeout=90.0) as env_client, httpx.Client(timeout=90.0) as policy_client:
         reset_response = post_json(env_client, "/reset", reset_request or None)
         current_response = reset_response
+        previous_response: JsonDict | None = None
+        previous_action: JsonDict | None = None
         print(f"reset | {summarize_step(current_response)}")
 
         if steps_path and screenshots_dir:
             save_step(steps_path, screenshots_dir, index=0, kind="reset", action=None, response=current_response)
 
         for index in range(1, args.max_steps + 1):
-            policy_payload, policy_response = request_action(policy_client, args.policy_url, current_response)
+            policy_payload, policy_response = request_action(
+                policy_client,
+                args.policy_url,
+                current_response,
+                previous_response=previous_response,
+                previous_action=previous_action,
+            )
             action = policy_response.get("action", policy_response)
+            previous_response = current_response
+            previous_action = action
             current_response = post_json(env_client, "/step", action)
-            print(f"policy[{index}]={action['type']} | {summarize_step(current_response)}")
+            args_string = ", ".join(f"{key}: {value}" for key, value in action.items() if key != "type")
+            print(f"policy[{index}]={action['type']} args={args_string} | {summarize_step(current_response)}")
             if steps_path and screenshots_dir:
                 save_step(
                     steps_path,
