@@ -68,6 +68,7 @@ Expected request payload:
   "allowed_actions": [
     {"type": "goto", "fields": ["url"]},
     {"type": "click", "fields": ["selector"]},
+    {"type": "click", "fields": ["x", "y"]},
     {"type": "fill", "fields": ["selector", "text"]},
     {"type": "keypress", "fields": ["key"]},
     {"type": "wait", "fields": ["milliseconds"]}
@@ -85,6 +86,12 @@ or:
 
 ```json
 {"type": "click", "selector": "[data-testid='activity-orders']"}
+```
+
+or:
+
+```json
+{"type": "click", "x": 640, "y": 380}
 ```
 
 ## Practical recommendation

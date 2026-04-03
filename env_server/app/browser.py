@@ -58,10 +58,14 @@ class BrowserSession:
                 target_url = urljoin(f"{base_origin}/", target_url.lstrip("/"))
             await self.page.goto(target_url, wait_until="networkidle")
         elif action.type == "click":
-            if not action.selector:
-                raise ValueError("click action requires selector")
             url_before = self.page.url
-            await self.page.locator(action.selector).click()
+            if action.selector:
+                await self.page.locator(action.selector).click()
+            elif action.x is not None and action.y is not None:
+
+                await self.page.mouse.click(float(action.x), float(action.y))
+            else:
+                raise ValueError("click action requires either selector or both x and y")
             # If the click triggered a navigation, wait for it to settle.
             await asyncio.sleep(0.15)
             if self.page.url != url_before:

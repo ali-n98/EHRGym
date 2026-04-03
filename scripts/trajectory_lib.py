@@ -108,6 +108,7 @@ def build_allowed_actions() -> list[JsonDict]:
     return [
         {"type": "goto", "fields": ["url"]},
         {"type": "click", "fields": ["selector"]},
+        {"type": "click", "fields": ["x", "y"]},
         {"type": "fill", "fields": ["selector", "text"]},
         {"type": "keypress", "fields": ["key"]},
         {"type": "wait", "fields": ["milliseconds"]},
