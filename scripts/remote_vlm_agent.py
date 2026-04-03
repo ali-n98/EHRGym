@@ -134,7 +134,8 @@ def main() -> None:
             action = policy_response.get("action", policy_response)
             previous_response = current_response
             current_response = post_json(env_client, "/step", action)
-            print(f"policy[{index}]={action['type']} | {summarize_step(current_response)}")
+            args_string = ", ".join(f"{key}: {value}" for key, value in action.items() if key != "type")
+            print(f"policy[{index}]={action['type']} args={args_string} | {summarize_step(current_response)}")
             if steps_path and screenshots_dir:
                 save_step(
                     steps_path,
