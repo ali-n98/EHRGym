@@ -63,6 +63,7 @@ def request_action(
     response: JsonDict,
     *,
     previous_response: JsonDict | None,
+    previous_action: JsonDict | None,
 ) -> tuple[JsonDict, JsonDict]:
     payload = {
         "timestamp": utc_now_iso(),
@@ -71,6 +72,7 @@ def request_action(
         "state": response["state"],
         "allowed_actions": build_allowed_actions(),
         "previous_response": previous_response,
+        "previous_action": previous_action,
     }
     policy_response = client.post(policy_url, json=payload)
     policy_response.raise_for_status()
@@ -119,6 +121,7 @@ def main() -> None:
         reset_response = post_json(env_client, "/reset", reset_request or None)
         current_response = reset_response
         previous_response: JsonDict | None = None
+        previous_action: JsonDict | None = None
         print(f"reset | {summarize_step(current_response)}")
 
         if steps_path and screenshots_dir:
@@ -130,9 +133,11 @@ def main() -> None:
                 args.policy_url,
                 current_response,
                 previous_response=previous_response,
+                previous_action=previous_action,
             )
             action = policy_response.get("action", policy_response)
             previous_response = current_response
+            previous_action = action
             current_response = post_json(env_client, "/step", action)
             args_string = ", ".join(f"{key}: {value}" for key, value in action.items() if key != "type")
             print(f"policy[{index}]={action['type']} args={args_string} | {summarize_step(current_response)}")
