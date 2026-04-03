@@ -11,6 +11,8 @@ ActionType = Literal["goto", "click", "fill", "keypress", "wait"]
 class Action(BaseModel):
     type: ActionType
     selector: Optional[str] = None
+    x: Optional[float] = None
+    y: Optional[float] = None
     text: Optional[str] = None
     url: Optional[str] = None
     key: Optional[str] = None
